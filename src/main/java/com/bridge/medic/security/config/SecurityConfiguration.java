@@ -1,6 +1,7 @@
 package com.bridge.medic.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,21 +13,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static com.bridge.medic.security.user.Permission.ADMIN_CREATE;
-import static com.bridge.medic.security.user.Permission.ADMIN_DELETE;
-import static com.bridge.medic.security.user.Permission.ADMIN_READ;
-import static com.bridge.medic.security.user.Permission.ADMIN_UPDATE;
-import static com.bridge.medic.security.user.Permission.MANAGER_CREATE;
-import static com.bridge.medic.security.user.Permission.MANAGER_DELETE;
-import static com.bridge.medic.security.user.Permission.MANAGER_READ;
-import static com.bridge.medic.security.user.Permission.MANAGER_UPDATE;
+import java.util.List;
+
+import static com.bridge.medic.security.user.Permission.*;
 import static com.bridge.medic.security.user.Role.ADMIN;
 import static com.bridge.medic.security.user.Role.MANAGER;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -34,6 +31,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
+    @Value("${application.client.url}")
+    private String clientUrl;
 
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
             "/v2/api-docs",
@@ -71,10 +70,22 @@ public class SecurityConfiguration {
                 .logout(logout ->
                         logout.logoutUrl("/api/v1/auth/logout")
                                 .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
+                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+                .cors(withDefaults());
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(clientUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
