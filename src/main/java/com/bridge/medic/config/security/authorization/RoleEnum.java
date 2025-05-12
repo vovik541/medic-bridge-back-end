@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.bridge.medic.config.security.authorization.Permission.*;
+import static com.bridge.medic.config.security.authorization.PermissionEnum.*;
 
 @RequiredArgsConstructor
-public enum Role {
+public enum RoleEnum {
 
     USER(Collections.emptySet()),
     ADMIN(
@@ -37,12 +37,12 @@ public enum Role {
     );
 
     @Getter
-    private final Set<Permission> permissions;
+    private final Set<PermissionEnum> permissionEnums;
 
     public List<SimpleGrantedAuthority> getAuthorities() {
-        var authorities = getPermissions()
+        var authorities = getPermissionEnums()
                 .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .map(permissionEnum -> new SimpleGrantedAuthority(permissionEnum.getPermission()))
                 .collect(Collectors.toList());
         authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
         return authorities;

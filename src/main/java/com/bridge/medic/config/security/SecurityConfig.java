@@ -22,9 +22,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static com.bridge.medic.config.security.authorization.Permission.*;
-import static com.bridge.medic.config.security.authorization.Role.ADMIN;
-import static com.bridge.medic.config.security.authorization.Role.MANAGER;
+import static com.bridge.medic.config.security.authorization.PermissionEnum.*;
+import static com.bridge.medic.config.security.authorization.RoleEnum.ADMIN;
+import static com.bridge.medic.config.security.authorization.RoleEnum.MANAGER;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;

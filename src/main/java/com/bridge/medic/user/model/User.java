@@ -1,44 +1,81 @@
 package com.bridge.medic.user.model;
 
 import com.bridge.medic.auth.token.Token;
-import com.bridge.medic.config.security.authorization.Role;
+import com.bridge.medic.config.security.authorization.model.Role;
+import com.bridge.medic.model.SpecialistData;
+import com.bridge.medic.model.chat.Chat;
+import com.bridge.medic.model.chat.Participant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "user")
 public class User implements UserDetails {
 
+    private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue
-    private Integer id;
-    private String firstname;
-    private String lastname;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id", unique = true)
+    private Long id;
+    @Column(nullable = false, name = "first_name")
+    private String firstName;
+    @Column(nullable = false, name = "last_name")
+    private String lastName;
+    @Column(nullable = false, unique = true)
     private String email;
-    private String password;
+    @Column(nullable = false, unique = true)
     private String login;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(nullable = false)
+    private String password;
+    @Column(name = "is_locked", columnDefinition = "boolean default false")
+    private Boolean isLocked;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "users_role_junction",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    private List<Role> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Token> tokens;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "credit_card_detail_id")
+    CreditCardDetail creditCardDetail;
+    @ManyToMany
+    @JoinTable(
+            name = "user_language",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id")
+    )
+    private List<Language> languages = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Participant> participants = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
+    private List<Chat> chats = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private SpecialistData specialistData;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -58,7 +95,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !isLocked;
     }
 
     @Override
@@ -70,6 +107,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-
 }

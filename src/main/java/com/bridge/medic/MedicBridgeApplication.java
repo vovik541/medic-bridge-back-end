@@ -35,7 +35,6 @@ public class MedicBridgeApplication {
 //					.lastname("Admin")
 //					.email("admin@mail.com")
 //					.password("password")
-//					.role(ADMIN)
 //					.build();
 //			System.out.println("Admin token: " + service.register(admin).getAccessToken());
 //
@@ -44,7 +43,6 @@ public class MedicBridgeApplication {
 //					.lastname("Admin")
 //					.email("manager@mail.com")
 //					.password("password")
-//					.role(MANAGER)
 //					.build();
 //			System.out.println("Manager token: " + service.register(manager).getAccessToken());
 //
