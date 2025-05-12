@@ -36,29 +36,36 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
     @Value("${application.client.url}")
     private String clientUrl;
+    @Value("${application.server.url}")
+    private String serverUrl;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui/**",
-            "/webjars/**",
-            "/swagger-ui.html"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+
+    private static final String[] SWAGGER_WHITELIST = {
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security"
+    };
+
+    private static final String[] AUTH_WHITELIST = {
+            "/api/v1/auth/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
+                        req.requestMatchers(SWAGGER_WHITELIST).permitAll()
+                                .requestMatchers(AUTH_WHITELIST).permitAll()
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                                 .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
                                 .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
@@ -79,10 +86,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(withDefaults())
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//                );
+//        return http.build();
+//    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(clientUrl));
+        config.setAllowedOrigins(List.of(clientUrl, serverUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
