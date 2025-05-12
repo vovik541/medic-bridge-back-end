@@ -31,14 +31,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public boolean doesUserAlreadyExistByEmail(String email) {
-        return repository.findByEmail(email).isPresent();
-    }
-
-    public boolean doesUserAlreadyExistByLogin(String email) {
-        return repository.findByLogin(email).isPresent();
-    }
-
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
                 .firstname(request.getFirstname())
