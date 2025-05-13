@@ -24,7 +24,7 @@ import java.util.List;
 
 import static com.bridge.medic.config.security.authorization.PermissionEnum.*;
 import static com.bridge.medic.config.security.authorization.RoleEnum.ADMIN;
-import static com.bridge.medic.config.security.authorization.RoleEnum.MANAGER;
+import static com.bridge.medic.config.security.authorization.RoleEnum.SUPPORT;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -66,11 +66,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(SWAGGER_WHITELIST).permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
-                                .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
-                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), SUPPORT.name())
+                                .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
+                                .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
+                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
+                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
                                 .anyRequest()
                                 .authenticated()
                 )
@@ -85,17 +85,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(withDefaults())
-//                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().permitAll()
-//                );
-//        return http.build();
-//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
