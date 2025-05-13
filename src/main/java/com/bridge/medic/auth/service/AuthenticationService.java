@@ -6,7 +6,6 @@ import com.bridge.medic.auth.dto.RegisterRequest;
 import com.bridge.medic.auth.token.Token;
 import com.bridge.medic.auth.token.TokenRepository;
 import com.bridge.medic.auth.token.TokenType;
-import com.bridge.medic.config.security.authorization.Role;
 import com.bridge.medic.config.security.service.JwtService;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
