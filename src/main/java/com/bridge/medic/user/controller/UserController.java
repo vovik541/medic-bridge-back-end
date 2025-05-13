@@ -1,14 +1,15 @@
 package com.bridge.medic.user.controller;
 
+import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.user.dto.ChangePasswordRequest;
+import com.bridge.medic.user.dto.GetUserSettingsPageResponse;
+import com.bridge.medic.user.dto.LocationDTO;
+import com.bridge.medic.user.mapper.UserMapper;
+import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -17,7 +18,9 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class UserController {
 
+    private final AuthenticatedUserService authService;
     private final UserService service;
+    private final UserMapper userMapper;
 
     @PatchMapping
     public ResponseEntity<?> changePassword(
@@ -41,5 +44,16 @@ public class UserController {
     @GetMapping("/check-by-email")
     public boolean doesUserAlreadyExistByEmail(String email) {
         return service.finUserByEmail(email).isPresent();
+    }
+
+    @GetMapping("/settings-page")
+    public ResponseEntity<GetUserSettingsPageResponse> getSettingsPage() {
+        User currentUser = authService.getCurrentUser();
+        LocationDTO locationDTO = new LocationDTO(currentUser.getCity().getName(),
+                currentUser.getCity().getRegion().getName(),
+                currentUser.getCity().getRegion().getCountry().getName()
+        );
+
+        return ResponseEntity.ok(new GetUserSettingsPageResponse(locationDTO, userMapper.toDto(currentUser)));
     }
 }
