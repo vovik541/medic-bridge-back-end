@@ -1,6 +1,5 @@
-package com.bridge.medic.model;
+package com.bridge.medic.specialist.model;
 
-import com.bridge.medic.model.location.City;
 import com.bridge.medic.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,14 +24,23 @@ public class SpecialistData {
     @Column(name = "specialist_data_id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "city_id")
-    private City city;
-
     @OneToMany(mappedBy = "specialistData", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SpecialistDoctorType> specialistDoctorTypes = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;
+
+    public void addSpecialistDoctorType(SpecialistDoctorType specialistDoctorType){
+        if (specialistDoctorTypes == null){
+            specialistDoctorTypes = new ArrayList<>();
+        }
+        specialistDoctorTypes.add(specialistDoctorType);
+        specialistDoctorType.setSpecialistData(this);
+    }
+
+    public void removeSpecialistDoctorType(SpecialistDoctorType specialistDoctorType) {
+        specialistDoctorTypes.remove(specialistDoctorType);
+        specialistDoctorType.setSpecialistData(null);
+    }
 }

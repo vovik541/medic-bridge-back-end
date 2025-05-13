@@ -1,5 +1,6 @@
-package com.bridge.medic.model;
+package com.bridge.medic.specialist.model;
 
+import com.bridge.medic.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,8 @@ public class SpecialistDoctorType {
 
     @Column(name = "is_approved")
     private boolean approved;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedBy;
 }

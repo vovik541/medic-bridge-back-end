@@ -23,7 +23,7 @@ public class Language {
     private Long id;
 
     @Column(name = "language_name")
-    private String languageName;
+    private String name;
 
     @ManyToMany(mappedBy = "languages")
     private List<User> users = new ArrayList<>();

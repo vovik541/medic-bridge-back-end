@@ -1,5 +1,7 @@
-package com.bridge.medic.model;
+package com.bridge.medic.appointment.model;
 
+import com.bridge.medic.appointment.ApprovalStatus;
+import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

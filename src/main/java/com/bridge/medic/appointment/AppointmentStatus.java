@@ -1,4 +1,4 @@
-package com.bridge.medic.model;
+package com.bridge.medic.appointment;
 
 public enum AppointmentStatus {
     PENDING,

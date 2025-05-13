@@ -1,4 +1,4 @@
-package com.bridge.medic.model.location;
+package com.bridge.medic.user.location.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

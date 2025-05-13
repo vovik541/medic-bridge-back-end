@@ -1,4 +1,4 @@
-package com.bridge.medic.model.location;
+package com.bridge.medic.user.location.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,24 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "country")
+@Table(name = "region")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Country {
+public class Region {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "country_id")
+    @Column(name = "region_id")
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "iso_code", unique = true, length = 10)
-    private String isoCode;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
 
-    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    private List<Region> regions = new ArrayList<>();
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    private List<City> cities = new ArrayList<>();
 }

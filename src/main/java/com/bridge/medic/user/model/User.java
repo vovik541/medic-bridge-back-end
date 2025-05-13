@@ -1,10 +1,11 @@
 package com.bridge.medic.user.model;
 
 import com.bridge.medic.auth.token.Token;
+import com.bridge.medic.chat.model.Chat;
+import com.bridge.medic.chat.model.Participant;
 import com.bridge.medic.config.security.authorization.model.Role;
-import com.bridge.medic.model.SpecialistData;
-import com.bridge.medic.model.chat.Chat;
-import com.bridge.medic.model.chat.Participant;
+import com.bridge.medic.specialist.model.SpecialistData;
+import com.bridge.medic.user.location.model.City;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,6 +79,16 @@ public class User implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
+
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
+
+    @ManyToOne()
+    @JoinColumn(name = "city_id")
+    private City city;
+
+    @Column(name = "profile_image_url")
+    private String image_url;
 
     @Override
     public String getPassword() {

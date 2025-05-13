@@ -1,4 +1,4 @@
-package com.bridge.medic.model.chat;
+package com.bridge.medic.chat.model;
 
 import com.bridge.medic.user.model.User;
 import jakarta.persistence.*;

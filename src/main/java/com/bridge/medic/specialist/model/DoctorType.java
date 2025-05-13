@@ -1,4 +1,4 @@
-package com.bridge.medic.model.location;
+package com.bridge.medic.specialist.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,25 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "region")
+@Table(name = "doctor_type")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Region {
+public class DoctorType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "region_id")
+    @Column(name = "doctor_type_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "doctor_type_name")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id", nullable = false)
-    private Country country;
-
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<City> cities = new ArrayList<>();
+    @OneToMany(mappedBy = "doctorType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SpecialistDoctorType> specialistDoctorTypes = new ArrayList<>();
 }

@@ -1,6 +1,6 @@
-package com.bridge.medic.model;
+package com.bridge.medic.user.model;
 
-import com.bridge.medic.user.model.User;
+import com.bridge.medic.specialist.model.SpecialistData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

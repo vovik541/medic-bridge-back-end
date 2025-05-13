@@ -1,4 +1,4 @@
-package com.bridge.medic.model.chat;
+package com.bridge.medic.chat.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
