@@ -6,6 +6,9 @@ import com.bridge.medic.auth.dto.RegisterRequest;
 import com.bridge.medic.auth.token.Token;
 import com.bridge.medic.auth.token.TokenRepository;
 import com.bridge.medic.auth.token.TokenType;
+import com.bridge.medic.config.security.authorization.RoleEnum;
+import com.bridge.medic.config.security.authorization.model.Role;
+import com.bridge.medic.config.security.authorization.repozitory.RoleRepository;
 import com.bridge.medic.config.security.service.JwtService;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
@@ -32,15 +35,16 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        Role role = roleRepository.findByName(RoleEnum.USER.name()).orElseThrow();
         var user = User.builder()
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                //TODO setup role
-                .roles(List.of())
+                .roles(List.of(role))
                 .login(request.getLogin())
                 .build();
         var savedUser = repository.save(user);
@@ -60,7 +64,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
+        var user = repository.findByEmailOrLogin(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
