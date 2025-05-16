@@ -42,8 +42,14 @@ public class UserController {
     }
 
     @GetMapping("/specialist-search")
-    public ResponseEntity<GetDoctorsFromSearchResponse> doesUserAlreadyExist(GetDoctorsFromSearchRequest request) {
-        List<User> specialists = specialistService.findSpecialists(request.getCity(), request.getLanguage(), request.getDoctorType());
+    public ResponseEntity<GetDoctorsFromSearchResponse> findSpecialists(
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) String doctorType,
+            @RequestParam(required = false) String language
+    ) {
+        List<User> specialists = specialistService.findSpecialists(city, language, doctorType);
         GetDoctorsFromSearchResponse response = new GetDoctorsFromSearchResponse(userMapper.usersToSpecialistDtos(specialists));
         return ResponseEntity.ok(response);
     }
