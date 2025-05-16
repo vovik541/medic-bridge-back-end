@@ -1,5 +1,7 @@
-package com.bridge.medic.user.dto;
+package com.bridge.medic.user.dto.response;
 
+import com.bridge.medic.user.dto.LocationDTO;
+import com.bridge.medic.user.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

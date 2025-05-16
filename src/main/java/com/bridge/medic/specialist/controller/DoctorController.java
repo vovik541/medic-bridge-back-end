@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/doctor")
-@Tag(name = "Management")
+@Tag(name = "Doctor")
 public class DoctorController {
 
     @Operation(
             description = "Get endpoint for manager",
-            summary = "This is a summary for management get endpoint",
+            summary = "This is a summary for doctor get endpoint",
             responses = {
                     @ApiResponse(
                             description = "Success",

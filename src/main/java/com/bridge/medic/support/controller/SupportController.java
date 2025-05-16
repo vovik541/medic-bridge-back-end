@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/management")
-@Tag(name = "Management")
-public class ManagementController {
+@RequestMapping("/api/v1/support")
+@Tag(name = "Support")
+public class SupportController {
 
     @Operation(
             description = "Get endpoint for manager",

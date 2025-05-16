@@ -27,7 +27,7 @@ public class SpecialistData {
     @OneToMany(mappedBy = "specialistData", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SpecialistDoctorType> specialistDoctorTypes = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 

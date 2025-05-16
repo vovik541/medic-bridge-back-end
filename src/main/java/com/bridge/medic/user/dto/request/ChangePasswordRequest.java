@@ -1,4 +1,4 @@
-package com.bridge.medic.user.dto;
+package com.bridge.medic.user.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;

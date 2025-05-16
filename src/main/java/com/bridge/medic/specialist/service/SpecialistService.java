@@ -1,4 +1,4 @@
-package com.bridge.medic.user.service;
+package com.bridge.medic.specialist.service;
 
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
 import com.bridge.medic.user.model.User;
@@ -9,26 +9,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class SpecialistService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
-    public Optional<User> finUserByEmailOrLogin(String emailOrLogin) {
-        return repository.findByEmailOrLogin(emailOrLogin);
+
+    public List<User> findSpecialists(String city, String language, String specialistType) {
+        return userRepository.searchSpecialists(city, language, specialistType);
     }
 
-    public Optional<User> finUserByEmail(String email) {
-        return repository.findByEmail(email);
-    }
-
-    public Optional<User> finUserByLogin(String email) {
-        return repository.findByLogin(email);
-    }
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
@@ -43,6 +37,6 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        repository.save(user);
+        userRepository.save(user);
     }
 }

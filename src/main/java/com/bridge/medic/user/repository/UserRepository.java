@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -15,4 +16,22 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u WHERE u.email = :emailOrLogin OR u.login = :emailOrLogin")
     Optional<User> findByEmailOrLogin(@Param("emailOrLogin") String emailOrLogin);
+
+    @Query("""
+    SELECT DISTINCT u FROM User u
+    JOIN u.specialistData sd
+    JOIN sd.specialistDoctorTypes sdt
+    JOIN sdt.doctorType dt
+    LEFT JOIN u.languages l
+    LEFT JOIN u.city c
+    WHERE sdt.approved = true
+      AND (:city IS NULL OR c.name = :city)
+      AND (:language IS NULL OR l.name = :language)
+      AND (:specialization IS NULL OR dt.name = :specialization)
+    """)
+    List<User> searchSpecialists(
+            @Param("city") String city,
+            @Param("language") String language,
+            @Param("specialization") String specialization
+    );
 }

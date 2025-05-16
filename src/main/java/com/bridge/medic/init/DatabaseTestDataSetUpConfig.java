@@ -183,15 +183,17 @@ public class DatabaseTestDataSetUpConfig {
                         .doctorType(doctorType)
                         .build();
                 specialistData.addSpecialistDoctorType(specialistDoctorType);
+                specialist.setSpecialistData(specialistData);
             }
             users.add(specialist);
         }
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 10; i++) {
             Collections.shuffle(cities);
             users.add(createBasicUser("user", i, RoleEnum.USER, cities.getFirst()));
         }
         userRepository.saveAll(users);
+
     }
 
     private User createBasicUser(String tag, int num, RoleEnum roleEnum, City city) {
@@ -207,6 +209,7 @@ public class DatabaseTestDataSetUpConfig {
                 .registrationDate(LocalDateTime.now())
                 .roles(List.of(roleRepository.findByName(roleEnum.name()).get()))
                 .city(city)
+                .image_url("https://cdn.pixabay.com/photo/2024/01/29/20/40/cat-8540772_640.jpg")
                 .build();
     }
 
@@ -232,6 +235,7 @@ public class DatabaseTestDataSetUpConfig {
             initLanguages();
             initDoctorTypes();
             initUsers();
+            System.out.println("INITIALISED DB instances");
         };
     }
 }
