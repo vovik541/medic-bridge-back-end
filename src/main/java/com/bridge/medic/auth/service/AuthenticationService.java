@@ -3,6 +3,7 @@ package com.bridge.medic.auth.service;
 import com.bridge.medic.auth.dto.AuthenticationRequest;
 import com.bridge.medic.auth.dto.AuthenticationResponse;
 import com.bridge.medic.auth.dto.RegisterRequest;
+import com.bridge.medic.auth.exception.UserAlreadyExistsException;
 import com.bridge.medic.auth.token.Token;
 import com.bridge.medic.auth.token.TokenRepository;
 import com.bridge.medic.auth.token.TokenType;
@@ -30,14 +31,19 @@ import static java.lang.Math.toIntExact;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) throws UserAlreadyExistsException {
+        if (userRepository.findByLogin(request.getLogin()).isPresent()
+            || userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new UserAlreadyExistsException();
+        }
+
         Role role = roleRepository.findByName(RoleEnum.USER.name()).orElseThrow();
         var user = User.builder()
                 .firstName(request.getFirstname())
@@ -47,7 +53,7 @@ public class AuthenticationService {
                 .roles(List.of(role))
                 .login(request.getLogin())
                 .build();
-        var savedUser = repository.save(user);
+        var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
@@ -64,7 +70,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmailOrLogin(request.getEmail())
+        var user = userRepository.findByEmailOrLogin(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -111,7 +117,7 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail)
+            var user = this.userRepository.findByEmail(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);

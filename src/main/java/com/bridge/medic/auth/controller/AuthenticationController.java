@@ -3,6 +3,7 @@ package com.bridge.medic.auth.controller;
 import com.bridge.medic.auth.dto.AuthenticationRequest;
 import com.bridge.medic.auth.dto.AuthenticationResponse;
 import com.bridge.medic.auth.dto.RegisterRequest;
+import com.bridge.medic.auth.exception.UserAlreadyExistsException;
 import com.bridge.medic.auth.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,10 +24,17 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public Object register(
             @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(service.register(request));
+        AuthenticationResponse response;
+        try {
+            response = service.register(request);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.unprocessableEntity();
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/authenticate")
