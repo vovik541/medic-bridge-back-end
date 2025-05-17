@@ -13,4 +13,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             WHERE a.specialistData.user.id = :specialistId
             """)
     List<Appointment> findAllBySpecialistId(@Param("specialistId") Long specialistId);
+
+    List<Appointment> findAllByUser_Id(Long userId);
 }

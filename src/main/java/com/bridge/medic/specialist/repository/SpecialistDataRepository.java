@@ -12,4 +12,6 @@ public interface SpecialistDataRepository extends JpaRepository<SpecialistData, 
     Optional<SpecialistData> findByUser(User user);
 
     List<SpecialistData> findAllByUserId(Long userId);
+
+//    User findSpecialistByDataId(Long specialistDataId);
 }

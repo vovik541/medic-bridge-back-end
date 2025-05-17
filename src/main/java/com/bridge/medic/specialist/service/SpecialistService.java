@@ -21,6 +21,10 @@ public class SpecialistService {
         return userRepository.searchSpecialists(city, language, specialistType);
     }
 
+//    public User findSpecialistBySpecialistDataId(long id) {
+//        return specialistDataRepository.findSpecialistByDataId(id);
+//    }
+
     public List<String> findAllApprovedPositionsBySpecialistId(Long specialistId) {
         return userRepository.findDoctorTypeNamesByUserId(specialistId);
     }

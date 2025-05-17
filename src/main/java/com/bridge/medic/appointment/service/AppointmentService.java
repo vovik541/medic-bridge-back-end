@@ -30,10 +30,26 @@ public class AppointmentService {
     private final SpecialistDataRepository specialistDataRepository;
     private final AuthenticatedUserService authenticatedUserService;
 
-    public List<AppointmentDto> getAppointments(Long specialistId) {
+    public List<AppointmentDto> getAppointmentsBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
-                .map(a -> new AppointmentDto(a.getStartTime(), a.getEndTime()))
+                .map(a -> AppointmentDto.builder()
+                        .start(a.getStartTime())
+                        .end(a.getEndTime())
+                        .build())
                 .collect(Collectors.toList());
+    }
+    public List<AppointmentDto> getAppointmentDtosByUser(Long userId) {
+
+        return appointmentRepository.findAllByUser_Id(userId).stream()
+                .map(a -> AppointmentDto.builder()
+                        .start(a.getStartTime())
+                        .end(a.getEndTime())
+                        .build())
+                .collect(Collectors.toList());
+    }
+    public List<Appointment> getAppointmentByUserId(Long userId) {
+
+        return appointmentRepository.findAllByUser_Id(userId);
     }
 
     public Appointment bookAppointment(CreateAppointmentRequest request) throws SpecialistNotFoundException {
