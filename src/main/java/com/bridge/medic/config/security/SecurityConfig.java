@@ -58,21 +58,35 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**"
     };
+    private static final String[] TEST_WHITELIST = {
+            "/api/v1/**"
+    };
+    private static final String[] WHITELIST = {
+            "/api/v1/users/specialist-search",
+            "/api/v1/appointments/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(SWAGGER_WHITELIST).permitAll()
-                                .requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), SUPPORT.name())
-                                .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
-                                .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
-                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
-                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
-                                .anyRequest()
-                                .authenticated()
+                                req.requestMatchers(SWAGGER_WHITELIST).permitAll()
+                                        .requestMatchers(AUTH_WHITELIST).permitAll()
+//                                .requestMatchers(TEST_WHITELIST).permitAll()
+                                        .requestMatchers(WHITELIST).permitAll()
+                                        .requestMatchers("/api/v1/appointments/**").authenticated()
+                                        .requestMatchers(POST, "/api/v1/appointments/book/**").authenticated()
+
+
+                                        .requestMatchers("/api/v1/doctor/**").hasAnyRole(ADMIN.name(), SUPPORT.name())
+                                        .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
+                                        .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
+                                        .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
+                                        .requestMatchers(DELETE, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
+
+                                        .anyRequest()
+                                        .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -89,7 +103,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(clientUrl, serverUrl));
+        config.setAllowedOrigins(List.of(clientUrl, serverUrl, clientUrl + "/user"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

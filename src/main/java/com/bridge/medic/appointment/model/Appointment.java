@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "appointment",
@@ -34,10 +34,10 @@ public class Appointment {
     private SpecialistData specialistData;
 
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private OffsetDateTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
+    private OffsetDateTime endTime;
 
     @Column(name = "description")
     private String description;

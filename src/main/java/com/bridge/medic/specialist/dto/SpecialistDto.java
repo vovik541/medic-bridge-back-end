@@ -15,5 +15,6 @@ public class SpecialistDto {
     private String login;
     private LocalDateTime registrationDate;
     private String imageUrl;
+    private String doctorType;
 //    private List<String> certifications;
 }

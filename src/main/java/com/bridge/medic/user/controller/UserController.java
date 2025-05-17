@@ -1,12 +1,12 @@
 package com.bridge.medic.user.controller;
 
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
+import com.bridge.medic.specialist.dto.SpecialistDto;
 import com.bridge.medic.specialist.service.SpecialistService;
+import com.bridge.medic.user.dto.LocationDTO;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
-import com.bridge.medic.user.dto.request.GetDoctorsFromSearchRequest;
 import com.bridge.medic.user.dto.response.GetDoctorsFromSearchResponse;
 import com.bridge.medic.user.dto.response.GetUserSettingsPageResponse;
-import com.bridge.medic.user.dto.LocationDTO;
 import com.bridge.medic.user.mapper.UserMapper;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.service.UserService;
@@ -51,6 +51,9 @@ public class UserController {
     ) {
         List<User> specialists = specialistService.findSpecialists(city, language, doctorType);
         GetDoctorsFromSearchResponse response = new GetDoctorsFromSearchResponse(userMapper.usersToSpecialistDtos(specialists));
+        for (SpecialistDto specialistDto : response.getSpecialists()) {
+            specialistDto.setDoctorType(doctorType);
+        }
         return ResponseEntity.ok(response);
     }
 
