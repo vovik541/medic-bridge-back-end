@@ -23,8 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 import static com.bridge.medic.config.security.authorization.PermissionEnum.*;
-import static com.bridge.medic.config.security.authorization.RoleEnum.ADMIN;
-import static com.bridge.medic.config.security.authorization.RoleEnum.SUPPORT;
+import static com.bridge.medic.config.security.authorization.RoleEnum.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -63,7 +62,6 @@ public class SecurityConfig {
     };
     private static final String[] WHITELIST = {
             "/api/v1/users/specialist-search",
-            "/api/v1/appointments/**"
     };
 
     @Bean
@@ -75,11 +73,8 @@ public class SecurityConfig {
                                         .requestMatchers(AUTH_WHITELIST).permitAll()
 //                                .requestMatchers(TEST_WHITELIST).permitAll()
                                         .requestMatchers(WHITELIST).permitAll()
-                                        .requestMatchers("/api/v1/appointments/**").authenticated()
-                                        .requestMatchers(POST, "/api/v1/appointments/book/**").authenticated()
-
-
-                                        .requestMatchers("/api/v1/doctor/**").hasAnyRole(ADMIN.name(), SUPPORT.name())
+                                        .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(), SPECIALIST.name(), SUPPORT.name(), ADMIN.name())
+                                        .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
                                         .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
                                         .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
                                         .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())

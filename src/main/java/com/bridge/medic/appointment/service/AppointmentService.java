@@ -53,16 +53,12 @@ public class AppointmentService {
             if (certification.getDoctorType().getName().equals(request.getDoctorType())
                     && certification.isApproved()) {
                 if (isAvailableForBooking(request)) {
-
-                    saveAppointment(request, specialistDataList.getFirst());
-
+                    return saveAppointment(request, specialistDataList.getFirst());
                 }
             }
         }
 
         throw new SpecialistNotFoundException();
-
-
     }
 
     private boolean isAvailableForBooking(CreateAppointmentRequest request) {
@@ -70,7 +66,7 @@ public class AppointmentService {
         return true;
     }
 
-    private void saveAppointment(CreateAppointmentRequest request, SpecialistData specialistData) {
+    private Appointment saveAppointment(CreateAppointmentRequest request, SpecialistData specialistData) {
         Appointment appointment = Appointment.builder()
                 .status(AppointmentStatus.PENDING)
                 .description("I feel like I need some consultation about ....")
@@ -79,6 +75,7 @@ public class AppointmentService {
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .build();
-        appointmentRepository.save(appointment);
+
+        return appointmentRepository.save(appointment);
     }
 }
