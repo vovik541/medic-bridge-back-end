@@ -13,6 +13,7 @@ import com.bridge.medic.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,14 +32,17 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsBySpecialist(specialistId));
     }
 
-    @PostMapping("/book")
-    public ResponseEntity<?> bookAppointment(@RequestBody CreateAppointmentRequest request) {
+    @PostMapping(value = "/book", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> bookAppointment(
+            @RequestPart("appointment") CreateAppointmentRequest request,
+            @RequestPart(value = "attachedDocument", required = false) MultipartFile attachedDocument
+    ) {
         try {
-            Appointment appointment = appointmentService.bookAppointment(request);
+            appointmentService.bookAppointment(request, attachedDocument);
+            return ResponseEntity.ok().build();
         } catch (SpecialistNotFoundException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Спеціаліста не знайдено");
         }
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/my-appointments")
@@ -56,6 +60,8 @@ public class AppointmentController {
                             .doctor(userMapper.userToUserDto(appointment.getSpecialistData().getUser()))
                             .description(appointment.getDescription())
                             .status(appointment.getStatus().name())
+                            .attachedDocumentUrl(appointment.getAttachedDocumentUrl())
+                            .meetingLink(appointment.getMeetingLink())
                     .build());
         }
 

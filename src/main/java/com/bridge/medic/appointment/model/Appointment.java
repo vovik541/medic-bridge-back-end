@@ -47,4 +47,10 @@ public class Appointment {
 
     @Column(name = "summary", length = 255)
     private String summary;
+
+    @Column(name = "meeting_link", length = 255)
+    private String meetingLink;
+
+    @Column(name = "attached_document_link", length = 255)
+    private String attachedDocumentUrl;
 }

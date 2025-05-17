@@ -74,7 +74,9 @@ public class SecurityConfig {
 //                                .requestMatchers(TEST_WHITELIST).permitAll()
                                         .requestMatchers(WHITELIST).permitAll()
                                         .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(), SPECIALIST.name(), SUPPORT.name(), ADMIN.name())
+                                        .requestMatchers("/api/v1/users/**").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/users/specialist-info-page").hasAnyAuthority(USER.name())
+                                        .requestMatchers("/api/v1/files/**").permitAll()
 
                                         .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
                                         .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())

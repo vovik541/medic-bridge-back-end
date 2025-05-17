@@ -5,16 +5,19 @@ import com.bridge.medic.appointment.dto.AppointmentDto;
 import com.bridge.medic.appointment.dto.request.CreateAppointmentRequest;
 import com.bridge.medic.appointment.exception.SpecialistNotFoundException;
 import com.bridge.medic.appointment.model.Appointment;
+import com.bridge.medic.appointment.model.Appointment.AppointmentBuilder;
 import com.bridge.medic.appointment.repository.AppointmentRepository;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.specialist.model.SpecialistData;
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
 import com.bridge.medic.specialist.repository.SpecialistDoctorTypeRepository;
+import com.bridge.medic.storage.service.FileLocalStorageService;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,7 @@ public class AppointmentService {
     private final SpecialistDoctorTypeRepository specialistDoctorTypeRepository;
     private final SpecialistDataRepository specialistDataRepository;
     private final AuthenticatedUserService authenticatedUserService;
+    private final FileLocalStorageService fileLocalStorageService;
 
     public List<AppointmentDto> getAppointmentsBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
@@ -52,7 +56,7 @@ public class AppointmentService {
         return appointmentRepository.findAllByUser_Id(userId);
     }
 
-    public Appointment bookAppointment(CreateAppointmentRequest request) throws SpecialistNotFoundException {
+    public Appointment bookAppointment(CreateAppointmentRequest request, MultipartFile attachedDocument) throws SpecialistNotFoundException {
         Optional<User> byId = userRepository.findById(Math.toIntExact(request.getSpecialistId()));
         if (byId.isEmpty())
             throw new SpecialistNotFoundException();
@@ -69,7 +73,7 @@ public class AppointmentService {
             if (certification.getDoctorType().getName().equals(request.getDoctorType())
                     && certification.isApproved()) {
                 if (isAvailableForBooking(request)) {
-                    return saveAppointment(request, specialistDataList.getFirst());
+                    return saveAppointment(request, specialistDataList.getFirst(), attachedDocument);
                 }
             }
         }
@@ -82,16 +86,18 @@ public class AppointmentService {
         return true;
     }
 
-    private Appointment saveAppointment(CreateAppointmentRequest request, SpecialistData specialistData) {
-        Appointment appointment = Appointment.builder()
+    private Appointment saveAppointment(CreateAppointmentRequest request, SpecialistData specialistData, MultipartFile attachedDocument) {
+        AppointmentBuilder appointmentBuilder = Appointment.builder()
                 .status(AppointmentStatus.PENDING)
-                .description("I feel like I need some consultation about ....")
+                .description(request.getDescription())
                 .user(authenticatedUserService.getCurrentUser())
                 .specialistData(specialistData)
                 .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .build();
-
-        return appointmentRepository.save(appointment);
+                .endTime(request.getEndTime());
+        if (attachedDocument != null && !attachedDocument.isEmpty()) {
+            String fileLink = fileLocalStorageService.storeFile(attachedDocument);
+            appointmentBuilder.attachedDocumentUrl(fileLink);
+        }
+        return appointmentRepository.save(appointmentBuilder.build());
     }
 }

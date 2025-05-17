@@ -4,16 +4,20 @@ import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.specialist.dto.SpecialistDto;
 import com.bridge.medic.specialist.service.SpecialistService;
 import com.bridge.medic.user.dto.LocationDTO;
+import com.bridge.medic.user.dto.UserDto;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
+import com.bridge.medic.user.dto.request.UpdateUserInfoRequest;
 import com.bridge.medic.user.dto.response.GetSpecialistInfoPageResponse;
 import com.bridge.medic.user.dto.response.GetDoctorsFromSearchResponse;
 import com.bridge.medic.user.dto.response.GetUserSettingsPageResponse;
 import com.bridge.medic.user.mapper.UserMapper;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,6 +32,12 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final SpecialistService specialistService;
+    private final AuthenticatedUserService authenticatedUserService;
+
+    @GetMapping("/user")
+    public ResponseEntity<UserDto> getCurrentUserInfo() {
+        return ResponseEntity.ok(userMapper.userToUserDto(authenticatedUserService.getCurrentUser()));
+    }
 
     @PatchMapping
     public ResponseEntity<?> changePassword(
@@ -106,4 +116,17 @@ public class UserController {
 
         return ResponseEntity.ok(new GetUserSettingsPageResponse(locationDTO, userMapper.userToUserDto(currentUser)));
     }
+    //done
+    @PutMapping("/update-profile")
+    public ResponseEntity<UserDto> updateProfile(@Valid @RequestBody UpdateUserInfoRequest request) {
+        userService.updateUserInfo(request);
+        return ResponseEntity.ok().build();
+    }
+    //todo
+//    @PostMapping("/upload-photo")
+//    public ResponseEntity<Void> uploadPhoto(@RequestParam("image") MultipartFile image) {
+//        var user = authenticatedUserService.getCurrentUser();
+//        userService.updateUserImage(user.getId(), image);
+//        return ResponseEntity.ok().build();
+//    }
 }

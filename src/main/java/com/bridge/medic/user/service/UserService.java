@@ -1,6 +1,8 @@
 package com.bridge.medic.user.service;
 
+import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
+import com.bridge.medic.user.dto.request.UpdateUserInfoRequest;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,22 +18,47 @@ import java.util.Optional;
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+    private final AuthenticatedUserService authenticatedUserService;
+
+    public void updateUserInfo(UpdateUserInfoRequest request){
+        User currentUser = authenticatedUserService.getCurrentUser();
+        if (!currentUser.getEmail().equals(request.getEmail())){
+            if (this.finUserByEmail(request.getEmail()).isEmpty()){
+                currentUser.setEmail(request.getEmail());
+            }
+        }
+        if (!currentUser.getLogin().equals(request.getLogin())){
+            if (this.finUserByLogin(request.getLogin()).isEmpty()){
+                currentUser.setLogin(request.getLogin());
+            }
+        }
+
+        if (!currentUser.getFirstName().equals(request.getFirstName())){
+            currentUser.setFirstName(request.getFirstName());
+        }
+
+        if (!currentUser.getLastName().equals(request.getLastName())){
+            currentUser.setLastName(request.getLastName());
+        }
+
+        userRepository.save(currentUser);
+    }
 
     public Optional<User> finUserByEmailOrLogin(String emailOrLogin) {
-        return repository.findByEmailOrLogin(emailOrLogin);
+        return userRepository.findByEmailOrLogin(emailOrLogin);
     }
 
     public Optional<User> finUserByEmail(String email) {
-        return repository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     public Optional<User> finUserByLogin(String email) {
-        return repository.findByLogin(email);
+        return userRepository.findByLogin(email);
     }
 
     public Optional<User> finUserById(int userId) {
-        return repository.findById(userId);
+        return userRepository.findById(userId);
     }
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
@@ -47,6 +74,6 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        repository.save(user);
+        userRepository.save(user);
     }
 }
