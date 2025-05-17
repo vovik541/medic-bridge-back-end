@@ -5,6 +5,7 @@ import com.bridge.medic.specialist.dto.SpecialistDto;
 import com.bridge.medic.specialist.service.SpecialistService;
 import com.bridge.medic.user.dto.LocationDTO;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
+import com.bridge.medic.user.dto.response.GetSpecialistInfoPageResponse;
 import com.bridge.medic.user.dto.response.GetDoctorsFromSearchResponse;
 import com.bridge.medic.user.dto.response.GetUserSettingsPageResponse;
 import com.bridge.medic.user.mapper.UserMapper;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -57,11 +59,38 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/specialist-info-page")
+    public ResponseEntity<GetSpecialistInfoPageResponse> getSpecialistInfoPage(
+            @RequestParam(required = false) int specialistId
+    ) {
+        Optional<User> optionalSpecialist = userService.finUserById(specialistId);
+        if (optionalSpecialist.isEmpty()){
+            ResponseEntity.badRequest().build();
+        }
+
+        User specialist = optionalSpecialist.get();
+        if (!specialistService.isSpecialist(specialist.getId())){
+            ResponseEntity.badRequest().build();
+        }
+
+        SpecialistDto specialistDto = userMapper.userToSpecialistDto(specialist);
+
+        GetSpecialistInfoPageResponse response = new GetSpecialistInfoPageResponse();
+
+        List<String> positions = specialistService.findAllApprovedPositionsBySpecialistId(specialist.getId());
+
+        response.setSpecialist(specialistDto);
+        response.setApprovedPositions(positions);
+
+        return ResponseEntity.ok(response);
+    }
+
+    //TODO
     @GetMapping("/check-by-login")
     public boolean doesUserAlreadyExistByLogin(String login) {
         return userService.finUserByLogin(login).isPresent();
     }
-
+    //TODO
     @GetMapping("/check-by-email")
     public boolean doesUserAlreadyExistByEmail(String email) {
         return userService.finUserByEmail(email).isPresent();

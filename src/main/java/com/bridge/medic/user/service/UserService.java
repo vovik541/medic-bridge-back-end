@@ -30,6 +30,10 @@ public class UserService {
         return repository.findByLogin(email);
     }
 
+    public Optional<User> finUserById(int userId) {
+        return repository.findById(userId);
+    }
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();

@@ -32,4 +32,14 @@ public class AppointmentController {
         }
         return ResponseEntity.ok().build();
     }
+
+//    @GetMapping("/")
+//    public ResponseEntity<?> getMyConsultations(@RequestBody CreateAppointmentRequest request) {
+//        try {
+//            Appointment appointment = appointmentService.bookAppointment(request);
+//        } catch (SpecialistNotFoundException e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        return ResponseEntity.ok().build();
+//    }
 }
