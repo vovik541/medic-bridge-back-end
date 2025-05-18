@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,16 +36,65 @@ public class AppointmentService {
     private final AuthenticatedUserService authenticatedUserService;
     private final FileLocalStorageService fileLocalStorageService;
 
-    public List<AppointmentDto> getAppointmentsBySpecialist(Long specialistId) {
+    public List<AppointmentDto> getAppointmentDtosBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
                 .map(a -> AppointmentDto.builder()
                         .start(a.getStartTime())
                         .end(a.getEndTime())
+                        .summary(a.getSummary())
+                        .meetingLink(a.getMeetingLink())
+                        .status(a.getStatus().name())
+                        .attachedDocumentUrl(a.getAttachedDocumentUrl())
                         .build())
                 .collect(Collectors.toList());
     }
-    public List<AppointmentDto> getAppointmentDtosByUser(Long userId) {
 
+    //чекають підтвердження
+    public List<Appointment> getPendingAppointmentsBySpecialistId(Long specialistId) {
+        List<Appointment> appointments = appointmentRepository.findAppointmentsBySpecialistIdAndStatus(specialistId, AppointmentStatus.PENDING);
+        closePassedTimeAppointment(appointments);
+        return appointments;
+    }
+
+    private void closePassedTimeAppointment(List<Appointment> pendingAppointments){
+        Appointment appointment;
+        Iterator<Appointment> iterator = pendingAppointments.iterator();
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        while (iterator.hasNext()){
+            appointment = iterator.next();
+            if (appointment.getStatus().equals(AppointmentStatus.PENDING) && currentTime.isBefore(appointment.getEndTime())){
+                appointment.setStatus(AppointmentStatus.CANCELED);
+                appointment.setSummary("Лікар не встиг відповісти на ваше бронювання");
+                appointmentRepository.save(appointment);
+                iterator.remove();
+            }
+        }
+    }
+    //підтверджені, мають відбутися
+    public List<Appointment> getApprovedOngoingAppointmentsBySpecialistId(Long specialistId) {
+        return appointmentRepository.findAppointmentsBySpecialistIdAndStatusAfterTime(specialistId,
+                AppointmentStatus.CONFIRMED, OffsetDateTime.now());
+    }
+
+    //Оцінені і не оцінені PASSED / CONFIRMED
+    public List<Appointment> getPassedAppointmentsBySpecialistId(Long specialistId) {
+        List<Appointment> pastAppointments = appointmentRepository
+                .findAppointmentsBySpecialistIdAndBeforeTimeAndStatusNotIn(specialistId,
+                        OffsetDateTime.now(), List.of(AppointmentStatus.CANCELED, AppointmentStatus.PENDING));
+        return pastAppointments;
+    }
+
+    //треба оцінити, відбулися CONFIRMED
+    public List<Appointment> getNotReviewedAppointmentsSpecialistId(Long specialistId) {
+        return appointmentRepository.findAppointmentsBySpecialistIdAndStatusBeforeTime(specialistId, AppointmentStatus.CONFIRMED, OffsetDateTime.now());
+    }
+
+    //просто всі відмінені
+    public List<Appointment> getCanceledAppointmentsBySpecialistId(Long specialistId) {
+        return appointmentRepository.findAppointmentsBySpecialistIdAndStatus(specialistId, AppointmentStatus.CANCELED);
+    }
+
+    public List<AppointmentDto> getAppointmentDtosByUser(Long userId) {
         return appointmentRepository.findAllByUser_Id(userId).stream()
                 .map(a -> AppointmentDto.builder()
                         .start(a.getStartTime())

@@ -1,4 +1,4 @@
-package com.bridge.medic.appointment;
+package com.bridge.medic.support;
 
 public enum ApprovalStatus {
     PENDING,

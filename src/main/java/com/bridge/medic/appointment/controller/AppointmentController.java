@@ -29,7 +29,7 @@ public class AppointmentController {
 
     @GetMapping("/{specialistId}")
     public ResponseEntity<List<AppointmentDto>> getAppointments(@PathVariable Long specialistId) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsBySpecialist(specialistId));
+        return ResponseEntity.ok(appointmentService.getAppointmentDtosBySpecialist(specialistId));
     }
 
     @PostMapping(value = "/book", consumes = {"multipart/form-data"})

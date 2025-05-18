@@ -48,6 +48,9 @@ public class Appointment {
     @Column(name = "summary", length = 255)
     private String summary;
 
+    @Column(name = "doctor_comment", length = 255)
+    private String comment;
+
     @Column(name = "meeting_link", length = 255)
     private String meetingLink;
 
