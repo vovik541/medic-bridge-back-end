@@ -151,6 +151,7 @@ public class DatabaseTestDataSetUpConfig {
                 .registrationDate(LocalDateTime.now())
                 .roles(roleRepository.findAll())
                 .city(cityRepository.findByName("Вінниця").get())
+                .image_url("https://cdn.pixabay.com/photo/2024/01/29/20/40/cat-8540772_640.jpg")
                 .build();
 
         userRepository.save(admin);

@@ -60,6 +60,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .roles(List.of(RoleEnum.USER.name()))
                 .build();
     }
 
@@ -79,6 +80,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .roles(user.getRoles().stream().map(Role::getName).toList())
                 .build();
     }
 

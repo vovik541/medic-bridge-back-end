@@ -62,6 +62,7 @@ public class SecurityConfig {
     };
     private static final String[] WHITELIST = {
             "/api/v1/users/specialist-search",
+            "/api/v1/commons/**"
     };
 
     @Bean
@@ -73,7 +74,7 @@ public class SecurityConfig {
                                         .requestMatchers(AUTH_WHITELIST).permitAll()
 //                                .requestMatchers(TEST_WHITELIST).permitAll()
                                         .requestMatchers(WHITELIST).permitAll()
-                                        .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name())
+                                        .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(),SPECIALIST.name())
                                         .requestMatchers("/api/v1/users/**").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/users/specialist-info-page").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/files/**").permitAll()

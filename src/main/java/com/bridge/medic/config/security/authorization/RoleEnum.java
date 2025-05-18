@@ -38,7 +38,11 @@ public enum RoleEnum {
                     SUPPORT_READ,
                     SUPPORT_UPDATE,
                     SUPPORT_DELETE,
-                    SUPPORT_CREATE
+                    SUPPORT_CREATE,
+                    USER_READ,
+                    USER_UPDATE,
+                    USER_DELETE,
+                    USER_CREATE
             )
     ),
     SPECIALIST(
@@ -46,7 +50,11 @@ public enum RoleEnum {
                     SPECIALIST_READ,
                     SPECIALIST_UPDATE,
                     SPECIALIST_DELETE,
-                    SPECIALIST_CREATE
+                    SPECIALIST_CREATE,
+                    USER_READ,
+                    USER_UPDATE,
+                    USER_DELETE,
+                    USER_CREATE
             )
     ),
     USER(
