@@ -52,6 +52,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(List.of(role))
                 .login(request.getLogin())
+                .image_url("https://cdn.pixabay.com/photo/2024/01/29/20/40/cat-8540772_640.jpg")
                 .build();
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
