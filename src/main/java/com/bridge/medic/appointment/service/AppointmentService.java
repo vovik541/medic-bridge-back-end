@@ -151,4 +151,16 @@ public class AppointmentService {
         }
         return appointmentRepository.save(appointmentBuilder.build());
     }
+
+    public void approveAppointment(Long appointmentId, String comment, String meetingLink){
+        Appointment appointment = appointmentRepository.getById(appointmentId);
+        appointment.setMeetingLink(meetingLink);
+        appointment.setComment(comment);
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        appointmentRepository.save(appointment);
+    }
+
+    public Long getSpecialistIdByAppointmentId(Long appointmentId){
+        return appointmentRepository.findById(appointmentId).get().getSpecialistData().getUser().getId();
+    }
 }

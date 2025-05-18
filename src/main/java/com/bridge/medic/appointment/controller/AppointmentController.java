@@ -66,7 +66,18 @@ public class AppointmentController {
         }
 
         GetUserConsultationsResponse response = new GetUserConsultationsResponse();
-        response.setConsultations(consultations);
+        response.setConsultations(consultations.reversed());
         return ResponseEntity.ok(response);
+    }
+    @PostMapping("/approve-appointment")
+    public ResponseEntity<?> approveAppointment(@RequestParam("appointmentId") Long appointmentId,
+                                                @RequestParam("message") String comment,
+                                                @RequestParam("appointmentLink") String appointmentLink) {
+        User user = authenticatedUserService.getCurrentUser();
+        if (!user.getId().equals(appointmentService.getSpecialistIdByAppointmentId(appointmentId))){
+            return ResponseEntity.unprocessableEntity().build();
+        }
+        appointmentService.approveAppointment(appointmentId, comment, appointmentLink);
+        return ResponseEntity.ok().build();
     }
 }
