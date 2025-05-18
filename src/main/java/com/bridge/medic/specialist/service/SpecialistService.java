@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,11 @@ public class SpecialistService {
     private final SpecialistDataRepository specialistDataRepository;
 
     public List<User> findSpecialists(String city, String language, String specialistType) {
-        return userRepository.searchSpecialists(city, language, specialistType);
+        if (Objects.isNull(city) || city.isEmpty()){
+            return userRepository.searchSpecialistsByLanguageAndType(language, specialistType);
+        }
+
+        return userRepository.searchSpecialistsByCityLanguageAndType(city, language, specialistType);
     }
 
 //    public User findSpecialistBySpecialistDataId(long id) {

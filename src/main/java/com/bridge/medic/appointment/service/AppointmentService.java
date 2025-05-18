@@ -62,7 +62,7 @@ public class AppointmentService {
         OffsetDateTime currentTime = OffsetDateTime.now();
         while (iterator.hasNext()){
             appointment = iterator.next();
-            if (appointment.getStatus().equals(AppointmentStatus.PENDING) && currentTime.isBefore(appointment.getEndTime())){
+            if (appointment.getStatus().equals(AppointmentStatus.PENDING) && currentTime.isAfter(appointment.getEndTime())){
                 appointment.setStatus(AppointmentStatus.CANCELED);
                 appointment.setSummary("Лікар не встиг відповісти на ваше бронювання");
                 appointmentRepository.save(appointment);

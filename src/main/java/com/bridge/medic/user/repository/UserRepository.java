@@ -29,12 +29,25 @@ public interface UserRepository extends JpaRepository<User, Integer> {
               AND (:language IS NULL OR l.name = :language)
               AND (:specialization IS NULL OR dt.name = :specialization)
             """)
-    List<User> searchSpecialists(
+    List<User> searchSpecialistsByCityLanguageAndType(
             @Param("city") String city,
             @Param("language") String language,
             @Param("specialization") String specialization
     );
-
+    @Query("""
+            SELECT DISTINCT u FROM User u
+            JOIN u.specialistData sd
+            JOIN sd.specialistDoctorTypes sdt
+            JOIN sdt.doctorType dt
+            LEFT JOIN u.languages l
+            WHERE sdt.approved = true
+              AND (:language IS NULL OR l.name = :language)
+              AND (:specialization IS NULL OR dt.name = :specialization)
+            """)
+    List<User> searchSpecialistsByLanguageAndType(
+            @Param("language") String language,
+            @Param("specialization") String specialization
+    );
     @Query("""
                 SELECT DISTINCT dt.name
                 FROM User u
