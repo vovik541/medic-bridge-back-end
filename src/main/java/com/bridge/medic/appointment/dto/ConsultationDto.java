@@ -18,4 +18,5 @@ public class ConsultationDto {
     private UserDto doctor;
     private String meetingLink;
     private String attachedDocumentUrl;
+    private String comment;
 }

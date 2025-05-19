@@ -1,5 +1,6 @@
 package com.bridge.medic.user.service;
 
+import com.bridge.medic.config.security.authorization.RoleEnum;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
 import com.bridge.medic.user.dto.request.UpdateUserInfoRequest;
@@ -75,5 +76,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         userRepository.save(user);
+    }
+
+    public void changeUserRole(Long userId, RoleEnum role){
+
     }
 }

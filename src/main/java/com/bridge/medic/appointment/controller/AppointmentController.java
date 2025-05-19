@@ -54,6 +54,7 @@ public class AppointmentController {
         for (Appointment appointment : appointmentsByUser){
             consultations.add(ConsultationDto.builder()
                             .id(appointment.getId())
+                            .comment(appointment.getComment())
                             .end(appointment.getEndTime())
                             .start(appointment.getStartTime())
                             .summary(appointment.getSummary())
