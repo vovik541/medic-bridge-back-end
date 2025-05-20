@@ -42,19 +42,22 @@ public class SupportService {
     }
 
     public void approveRequest(Long id, String reviewComment) {
-        updateReviewByStatus(id, reviewComment, ApprovalStatus.APPROVED);
+        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(id)).orElseThrow();
+        approvalLog.setReviewedBy(authenticatedUserService.getCurrentUser());
+        approvalLog.getSpecialistDoctorType().setApproved(true);
+        approvalLog.getSpecialistDoctorType().setApprovedBy(authenticatedUserService.getCurrentUser());
+        updateReviewByStatus(id, reviewComment, ApprovalStatus.APPROVED, approvalLog);
     }
 
     public void rejectRequest(Long id, String reviewComment) {
-        updateReviewByStatus(id, reviewComment, ApprovalStatus.REJECTED);
+        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(id)).orElseThrow();
+        updateReviewByStatus(id, reviewComment, ApprovalStatus.REJECTED, approvalLog);
     }
 
-    public void updateReviewByStatus(Long id, String reviewComment, ApprovalStatus status) {
-        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(id)).orElseThrow();
+    public void updateReviewByStatus(Long id, String reviewComment, ApprovalStatus status, ApprovalLog approvalLog) {
         approvalLog.setStatus(status);
         approvalLog.setReviewComment(reviewComment);
         approvalLog.setReviewedAt(LocalDateTime.now());
-        approvalLog.setReviewedBy(authenticatedUserService.getCurrentUser());
 
         approvalLogRepository.save(approvalLog);
     }
