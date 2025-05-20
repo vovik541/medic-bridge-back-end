@@ -13,13 +13,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class BecomeDoctorController {
 
     private final SupportService supportService;
 
-    @PostMapping("/review-request")
+    @PostMapping("/user/review-request")
     public ResponseEntity<?> createBecomeDoctorRequest(
             @RequestPart("request") DoctorReviewRequest request,
             @RequestPart(value = "attachedReviewDocument", required = false) MultipartFile attachedReviewDocument) {
@@ -29,7 +29,7 @@ public class BecomeDoctorController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/review-requests")
+    @GetMapping("/support/review-request")
     public ResponseEntity<List<ApprovalLogDTO>> getAllReviewRequests() {
         List<ApprovalLog> allToReviewRequests = supportService.getAllToReviewRequests();
         List<ApprovalLogDTO> logDtos = new LinkedList<>();
@@ -51,15 +51,15 @@ public class BecomeDoctorController {
         return ResponseEntity.ok(logDtos);
     }
 
-    @GetMapping("/approve-request")
-    public ResponseEntity<?> approveRequest(@RequestPart("logId") Long logId, @RequestPart("logId") String reviewComment) {
+    @GetMapping("/support/approve-request")
+    public ResponseEntity<?> approveRequest(@RequestParam("logId") Long logId, @RequestParam("logId") String reviewComment) {
         supportService.approveRequest(logId, reviewComment);
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/reject-request")
-    public ResponseEntity<?> rejectRequest(@RequestPart("logId") Long logId, @RequestPart("logId") String reviewComment) {
+    @GetMapping("/support/reject-request")
+    public ResponseEntity<?> rejectRequest(@RequestParam("logId") Long logId, @RequestParam("logId") String reviewComment) {
         supportService.rejectRequest(logId, reviewComment);
 
         return ResponseEntity.ok().build();

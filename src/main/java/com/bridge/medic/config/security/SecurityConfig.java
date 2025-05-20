@@ -81,6 +81,9 @@ public class SecurityConfig {
                                         .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(SPECIALIST.name())
                                         .requestMatchers("/api/v1/doctor/appointments/**").hasAnyAuthority(SPECIALIST.name())
                                         .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
+                                        .requestMatchers("/api/v1/support/**").hasAnyAuthority(SUPPORT.name(),ADMIN.name())
+
+
                                         .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
                                         .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
                                         .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
