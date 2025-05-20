@@ -1,6 +1,7 @@
-package com.bridge.medic.support;
+package com.bridge.medic.support.model;
 
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
+import com.bridge.medic.support.ApprovalStatus;
 import com.bridge.medic.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,9 @@ public class ApprovalLog {
 
     @Column(name = "review_comment", columnDefinition = "TEXT")
     private String reviewComment;
+
+    @Column(name = "about_doctor_comment", columnDefinition = "TEXT")
+    private String aboutDoctorComment;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

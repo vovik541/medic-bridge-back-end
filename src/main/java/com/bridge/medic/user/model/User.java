@@ -119,4 +119,15 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void addLanguageIfAbsent(Language language) {
+        if (language == null) return;
+
+        boolean alreadyAdded = this.languages.stream()
+                .anyMatch(l -> l.getId().equals(language.getId()));
+
+        if (!alreadyAdded) {
+            this.languages.add(language);
+        }
+    }
 }
