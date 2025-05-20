@@ -149,7 +149,7 @@ public class AppointmentService {
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime());
         if (attachedDocument != null && !attachedDocument.isEmpty()) {
-            String fileLink = fileLocalStorageService.storeFile(attachedDocument);
+            String fileLink = fileLocalStorageService.storeFile(attachedDocument, "appointment/" + authenticatedUserService.getCurrentUser().getId() + "/");
             appointmentBuilder.attachedDocumentUrl(fileLink);
         }
         return appointmentRepository.save(appointmentBuilder.build());
