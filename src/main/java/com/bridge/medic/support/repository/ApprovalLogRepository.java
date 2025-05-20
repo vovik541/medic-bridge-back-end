@@ -1,8 +1,11 @@
 package com.bridge.medic.support.repository;
 
+import com.bridge.medic.support.ApprovalStatus;
 import com.bridge.medic.support.model.ApprovalLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ApprovalLogRepository extends JpaRepository<ApprovalLog, Integer> {
+import java.util.List;
 
+public interface ApprovalLogRepository extends JpaRepository<ApprovalLog, Integer> {
+    List<ApprovalLog> findAllByStatus(ApprovalStatus status);
 }

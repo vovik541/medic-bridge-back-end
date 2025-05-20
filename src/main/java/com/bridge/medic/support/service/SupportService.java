@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static java.lang.Math.toIntExact;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,28 @@ public class SupportService {
     private final LanguageRepository languageRepository;
 
     private final FileLocalStorageService fileLocalStorageService;
+
+    public List<ApprovalLog> getAllToReviewRequests() {
+        return approvalLogRepository.findAllByStatus(ApprovalStatus.PENDING);
+    }
+
+    public void approveRequest(Long id, String reviewComment) {
+        updateReviewByStatus(id, reviewComment, ApprovalStatus.APPROVED);
+    }
+
+    public void rejectRequest(Long id, String reviewComment) {
+        updateReviewByStatus(id, reviewComment, ApprovalStatus.REJECTED);
+    }
+
+    public void updateReviewByStatus(Long id, String reviewComment, ApprovalStatus status) {
+        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(id)).orElseThrow();
+        approvalLog.setStatus(status);
+        approvalLog.setReviewComment(reviewComment);
+        approvalLog.setReviewedAt(LocalDateTime.now());
+        approvalLog.setReviewedBy(authenticatedUserService.getCurrentUser());
+
+        approvalLogRepository.save(approvalLog);
+    }
 
     @Transactional
     public void createBecomeDoctorRequest(DoctorReviewRequest request, MultipartFile file) {
