@@ -172,6 +172,22 @@ public class AppointmentService {
                 .build());
     }
 
+    public void cancelAppointment(Long appointmentId, String comment, User specialist){
+        Appointment appointment = appointmentRepository.getById(appointmentId);
+        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)){
+            return;
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELED);
+        appointment.setComment(comment);
+        appointmentRepository.save(appointment);
+        emailService.sendSimpleMail(EmailDetails.builder()
+                .subject("BridgeMedic консультацію скасовано")
+                .recipient(appointment.getUser().getEmail())
+                .msgBody(buildCancelAppointmentMessage(specialist, appointment))
+                .build());
+    }
+
     public Long getSpecialistIdByAppointmentId(Long appointmentId){
         return appointmentRepository.findById(appointmentId).get().getSpecialistData().getUser().getId();
     }
@@ -179,6 +195,14 @@ public class AppointmentService {
     private String buildApproveAppointmentMessage(User specialist, Appointment appointment){
         String ln = System.lineSeparator();
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " підтверджено." + ln
+                + "Коментар: " + appointment.getComment() + ln
+                + "Посилання: " + appointment.getMeetingLink() + ln
+                + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
+    }
+
+    private String buildCancelAppointmentMessage(User specialist, Appointment appointment){
+        String ln = System.lineSeparator();
+        return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " скасовано." + ln
                 + "Коментар: " + appointment.getComment() + ln
                 + "Посилання: " + appointment.getMeetingLink() + ln
                 + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();

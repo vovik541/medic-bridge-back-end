@@ -81,4 +81,14 @@ public class AppointmentController {
         appointmentService.approveAppointment(appointmentId, comment, appointmentLink, currentSpecialist);
         return ResponseEntity.ok().build();
     }
+    @PostMapping("/cancel-appointment")
+    public ResponseEntity<?> cancelAppointment(@RequestParam("appointmentId") Long appointmentId,
+                                                @RequestParam("message") String comment) {
+        User currentSpecialist = authenticatedUserService.getCurrentUser();
+        if (!currentSpecialist.getId().equals(appointmentService.getSpecialistIdByAppointmentId(appointmentId))){
+            return ResponseEntity.unprocessableEntity().build();
+        }
+        appointmentService.cancelAppointment(appointmentId, comment, currentSpecialist);
+        return ResponseEntity.ok().build();
+    }
 }
