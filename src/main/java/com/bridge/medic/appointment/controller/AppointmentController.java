@@ -74,11 +74,11 @@ public class AppointmentController {
     public ResponseEntity<?> approveAppointment(@RequestParam("appointmentId") Long appointmentId,
                                                 @RequestParam("message") String comment,
                                                 @RequestParam("appointmentLink") String appointmentLink) {
-        User user = authenticatedUserService.getCurrentUser();
-        if (!user.getId().equals(appointmentService.getSpecialistIdByAppointmentId(appointmentId))){
+        User currentSpecialist = authenticatedUserService.getCurrentUser();
+        if (!currentSpecialist.getId().equals(appointmentService.getSpecialistIdByAppointmentId(appointmentId))){
             return ResponseEntity.unprocessableEntity().build();
         }
-        appointmentService.approveAppointment(appointmentId, comment, appointmentLink);
+        appointmentService.approveAppointment(appointmentId, comment, appointmentLink, currentSpecialist);
         return ResponseEntity.ok().build();
     }
 }

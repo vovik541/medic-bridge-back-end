@@ -8,6 +8,8 @@ import com.bridge.medic.appointment.model.Appointment;
 import com.bridge.medic.appointment.model.Appointment.AppointmentBuilder;
 import com.bridge.medic.appointment.repository.AppointmentRepository;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
+import com.bridge.medic.mail.EmailDetails;
+import com.bridge.medic.mail.EmailService;
 import com.bridge.medic.specialist.model.SpecialistData;
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
@@ -35,6 +37,7 @@ public class AppointmentService {
     private final SpecialistDataRepository specialistDataRepository;
     private final AuthenticatedUserService authenticatedUserService;
     private final FileLocalStorageService fileLocalStorageService;
+    private final EmailService emailService;
 
     public List<AppointmentDto> getAppointmentDtosBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
@@ -152,15 +155,32 @@ public class AppointmentService {
         return appointmentRepository.save(appointmentBuilder.build());
     }
 
-    public void approveAppointment(Long appointmentId, String comment, String meetingLink){
+    public void approveAppointment(Long appointmentId, String comment, String meetingLink, User specialist){
         Appointment appointment = appointmentRepository.getById(appointmentId);
+        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)){
+            return;
+        }
+        
         appointment.setMeetingLink(meetingLink);
         appointment.setComment(comment);
         appointment.setStatus(AppointmentStatus.CONFIRMED);
         appointmentRepository.save(appointment);
+        emailService.sendSimpleMail(EmailDetails.builder()
+                        .subject("BridgeMedic консультацію підтверджено")
+                        .recipient(appointment.getUser().getEmail())
+                        .msgBody(buildApproveAppointmentMessage(specialist, appointment))
+                .build());
     }
 
     public Long getSpecialistIdByAppointmentId(Long appointmentId){
         return appointmentRepository.findById(appointmentId).get().getSpecialistData().getUser().getId();
+    }
+
+    private String buildApproveAppointmentMessage(User specialist, Appointment appointment){
+        String ln = System.lineSeparator();
+        return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " підтверджено." + ln
+                + "Коментар: " + appointment.getComment() + ln
+                + "Посилання: " + appointment.getMeetingLink() + ln
+                + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
     }
 }
