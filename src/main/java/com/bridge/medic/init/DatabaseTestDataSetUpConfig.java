@@ -4,6 +4,8 @@ import com.bridge.medic.auth.service.AuthenticationService;
 import com.bridge.medic.config.security.authorization.RoleEnum;
 import com.bridge.medic.config.security.authorization.model.Role;
 import com.bridge.medic.config.security.authorization.repozitory.RoleRepository;
+import com.bridge.medic.mail.EmailDetails;
+import com.bridge.medic.mail.EmailService;
 import com.bridge.medic.specialist.model.DoctorType;
 import com.bridge.medic.specialist.model.SpecialistData;
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
@@ -43,6 +45,7 @@ public class DatabaseTestDataSetUpConfig {
     private final DoctorTypeRepository doctorTypeRepository;
     private final SpecialistDataRepository specialistDataRepository;
     private final SpecialistDoctorTypeRepository specialistDoctorTypeRepository;
+    private final EmailService emailService;
 
     private final List<String> doctorTypes = new LinkedList<>() {{
         this.add("Дієтолог");
@@ -237,6 +240,14 @@ public class DatabaseTestDataSetUpConfig {
             initDoctorTypes();
             initUsers();
             System.out.println("INITIALISED DB instances");
+//            testMailSender();
         };
+    }
+    private void testMailSender(){
+        emailService.sendSimpleMail(EmailDetails.builder()
+                .recipient("conanzhill@gmail.com")
+                .msgBody("Testing message")
+                .subject("Medic-Bridge test")
+                .build());
     }
 }
