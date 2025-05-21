@@ -28,20 +28,38 @@ public class AdminController {
     private final AuthenticatedUserService authenticatedUserService;
     private final UserMapper userMapper;
 
-    @PostMapping("/change-role")
-    public ResponseEntity<?> changeUserRole(@RequestParam("userId") Long userId,
+    @PostMapping("/add-role")
+    public ResponseEntity<?> addUserRole(@RequestParam("userId") Long userId,
                                             @RequestParam("newRole") String newRole) {
         if (Stream.of(RoleEnum.values()).map(Enum::name).anyMatch(x -> x.equals(newRole))) {
-            adminService.changeUserRole(userId, RoleEnum.valueOf(newRole));
+            adminService.addRole(userId, RoleEnum.valueOf(newRole));
             return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/block")
+    @PostMapping("/remove-role")
+    public ResponseEntity<?> removeRole(@RequestParam("userId") Long userId,
+                                            @RequestParam("newRole") String newRole) {
+        if (Stream.of(RoleEnum.values()).map(Enum::name).anyMatch(x -> x.equals(newRole))) {
+            adminService.removeRole(userId, RoleEnum.valueOf(newRole));
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/lock")
     public ResponseEntity<?> blockUser(@RequestParam("userId") Long userId) {
         adminService.blockUser(userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/unlock")
+    public ResponseEntity<?> unblockUser(@RequestParam("userId") Long userId) {
+        adminService.unblockUser(userId);
 
         return ResponseEntity.ok().build();
     }

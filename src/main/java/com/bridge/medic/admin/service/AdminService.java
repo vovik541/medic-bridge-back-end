@@ -19,10 +19,17 @@ public class AdminService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    public void changeUserRole(Long userId, RoleEnum role) {
+    public void addRole(Long userId, RoleEnum role) {
         User user = userRepository.findById(userId.intValue()).orElseThrow();
         Role roleEntity = roleRepository.findByName(role.name()).orElseThrow();
         user.addRoleIfAbsent(roleEntity);
+        userRepository.save(user);
+    }
+
+    public void removeRole(Long userId, RoleEnum role) {
+        User user = userRepository.findById(userId.intValue()).orElseThrow();
+        Role roleEntity = roleRepository.findByName(role.name()).orElseThrow();
+        user.removeRoleIfPresent(roleEntity);
         userRepository.save(user);
     }
 
@@ -31,7 +38,11 @@ public class AdminService {
         user.setIsLocked(true);
         userRepository.save(user);
     }
-
+    public void unblockUser(Long userId) {
+        User user = userRepository.findById(userId.intValue()).orElseThrow();
+        user.setIsLocked(false);
+        userRepository.save(user);
+    }
     public Page<User> getFilteredUsers(String login, String email, String role, Pageable pageable) {
         Specification<User> spec = Specification.where(UserSpecification.loginLike(login))
                 .and(UserSpecification.emailLike(email))

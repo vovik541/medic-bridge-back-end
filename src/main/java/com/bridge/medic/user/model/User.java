@@ -141,4 +141,15 @@ public class User implements UserDetails {
             this.roles.add(role);
         }
     }
+
+    public void removeRoleIfPresent(Role role){
+        if (role == null) return;
+
+        boolean alreadyAdded = this.roles.stream()
+                .anyMatch(r -> r.getId().equals(role.getId()));
+
+        if (alreadyAdded) {
+            this.roles.remove(role);
+        }
+    }
 }
