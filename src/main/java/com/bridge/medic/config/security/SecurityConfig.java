@@ -22,9 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static com.bridge.medic.config.security.authorization.PermissionEnum.*;
 import static com.bridge.medic.config.security.authorization.RoleEnum.*;
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -62,7 +60,8 @@ public class SecurityConfig {
     };
     private static final String[] WHITELIST = {
             "/api/v1/users/specialist-search",
-            "/api/v1/commons/**"
+            "/api/v1/commons/**",
+            "/api/v1/files/**" //TODO deal with file security
     };
 
     @Bean
@@ -74,20 +73,19 @@ public class SecurityConfig {
                                         .requestMatchers(AUTH_WHITELIST).permitAll()
 //                                .requestMatchers(TEST_WHITELIST).permitAll()
                                         .requestMatchers(WHITELIST).permitAll()
-                                        .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(),SPECIALIST.name())
+                                        .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(), SPECIALIST.name())
                                         .requestMatchers("/api/v1/users/**").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/users/specialist-info-page").hasAnyAuthority(USER.name())
-                                        .requestMatchers("/api/v1/files/**").permitAll()
                                         .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(SPECIALIST.name())
                                         .requestMatchers("/api/v1/doctor/appointments/**").hasAnyAuthority(SPECIALIST.name())
-                                        .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
-                                        .requestMatchers("/api/v1/support/**").hasAnyAuthority(SUPPORT.name(),ADMIN.name())
+//                                        .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
+                                        .requestMatchers("/api/v1/support/**").hasAnyAuthority(SUPPORT.name(), ADMIN.name())
+                                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority(ADMIN.name())
 
-
-                                        .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
-                                        .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
-                                        .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
-                                        .requestMatchers(DELETE, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
+//                                        .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
+//                                        .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
+//                                        .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
+//                                        .requestMatchers(DELETE, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
 
                                         .anyRequest()
                                         .authenticated()

@@ -130,4 +130,15 @@ public class User implements UserDetails {
             this.languages.add(language);
         }
     }
+
+    public void addRoleIfAbsent(Role role) {
+        if (role == null) return;
+
+        boolean alreadyAdded = this.roles.stream()
+                .anyMatch(r -> r.getId().equals(role.getId()));
+
+        if (!alreadyAdded) {
+            this.roles.add(role);
+        }
+    }
 }

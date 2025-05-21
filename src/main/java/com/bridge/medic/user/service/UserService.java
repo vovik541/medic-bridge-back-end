@@ -1,6 +1,5 @@
 package com.bridge.medic.user.service;
 
-import com.bridge.medic.config.security.authorization.RoleEnum;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.user.dto.request.ChangePasswordRequest;
 import com.bridge.medic.user.dto.request.UpdateUserInfoRequest;
@@ -22,24 +21,24 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthenticatedUserService authenticatedUserService;
 
-    public void updateUserInfo(UpdateUserInfoRequest request){
+    public void updateUserInfo(UpdateUserInfoRequest request) {
         User currentUser = authenticatedUserService.getCurrentUser();
-        if (!currentUser.getEmail().equals(request.getEmail())){
-            if (this.finUserByEmail(request.getEmail()).isEmpty()){
+        if (!currentUser.getEmail().equals(request.getEmail())) {
+            if (this.finUserByEmail(request.getEmail()).isEmpty()) {
                 currentUser.setEmail(request.getEmail());
             }
         }
-        if (!currentUser.getLogin().equals(request.getLogin())){
-            if (this.finUserByLogin(request.getLogin()).isEmpty()){
+        if (!currentUser.getLogin().equals(request.getLogin())) {
+            if (this.finUserByLogin(request.getLogin()).isEmpty()) {
                 currentUser.setLogin(request.getLogin());
             }
         }
 
-        if (!currentUser.getFirstName().equals(request.getFirstName())){
+        if (!currentUser.getFirstName().equals(request.getFirstName())) {
             currentUser.setFirstName(request.getFirstName());
         }
 
-        if (!currentUser.getLastName().equals(request.getLastName())){
+        if (!currentUser.getLastName().equals(request.getLastName())) {
             currentUser.setLastName(request.getLastName());
         }
 
@@ -78,7 +77,5 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void changeUserRole(Long userId, RoleEnum role){
 
-    }
 }

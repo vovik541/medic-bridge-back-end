@@ -1,5 +1,7 @@
 package com.bridge.medic.user.controller;
 
+import com.bridge.medic.config.security.authorization.model.Role;
+import com.bridge.medic.config.security.authorization.repozitory.RoleRepository;
 import com.bridge.medic.specialist.model.DoctorType;
 import com.bridge.medic.specialist.repository.DoctorTypeRepository;
 import com.bridge.medic.user.model.Language;
@@ -19,13 +21,20 @@ public class CommonDataController {
 
     private final DoctorTypeRepository doctorTypeRepository;
     private final LanguageRepository languageRepository;
+    private final RoleRepository roleRepository;
 
     @GetMapping("/specialist-types")
     public ResponseEntity<List<String>> getSpecialistTypes() {
         return ResponseEntity.ok(doctorTypeRepository.findAll().stream().map(DoctorType::getName).toList());
     }
+
     @GetMapping("/languages-types")
     public ResponseEntity<List<String>> getLanguages() {
         return ResponseEntity.ok(languageRepository.findAll().stream().map(Language::getName).toList());
+    }
+
+    @GetMapping("/role-types")
+    public ResponseEntity<List<String>> getRoles() {
+        return ResponseEntity.ok(roleRepository.findAll().stream().map(Role::getName).toList());
     }
 }
