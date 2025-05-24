@@ -1,7 +1,7 @@
 spring:
-  config:
-    activate:
-      on-profile: local
+#  config:
+#    activate:
+#      on-profile: local //todo later on prod/test/local smart swap
   datasource:
     url: ${MB_DB_URL}
     username: ${MB_DB_USERNAME}
