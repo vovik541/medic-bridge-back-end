@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
-public class FileDownloadController {
+public class FileController {
 
     private final FileLocalStorageService fileStorageService;
 

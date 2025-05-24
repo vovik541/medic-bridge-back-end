@@ -52,14 +52,14 @@ public class BecomeDoctorController {
     }
 
     @GetMapping("/support/approve-request")
-    public ResponseEntity<?> approveRequest(@RequestParam("logId") Long logId, @RequestParam("logId") String reviewComment) {
+    public ResponseEntity<?> approveRequest(@RequestParam("logId") Long logId, @RequestParam("reviewComment") String reviewComment) {
         supportService.approveRequest(logId, reviewComment);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/support/reject-request")
-    public ResponseEntity<?> rejectRequest(@RequestParam("logId") Long logId, @RequestParam("logId") String reviewComment) {
+    public ResponseEntity<?> rejectRequest(@RequestParam("logId") Long logId, @RequestParam("reviewComment") String reviewComment) {
         supportService.rejectRequest(logId, reviewComment);
 
         return ResponseEntity.ok().build();

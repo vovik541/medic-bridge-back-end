@@ -1,5 +1,8 @@
 package com.bridge.medic.support.service;
 
+import com.bridge.medic.admin.service.AdminService;
+import com.bridge.medic.config.security.authorization.RoleEnum;
+import com.bridge.medic.config.security.authorization.repozitory.RoleRepository;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.specialist.model.DoctorType;
 import com.bridge.medic.specialist.model.SpecialistData;
@@ -14,6 +17,7 @@ import com.bridge.medic.support.model.ApprovalLog;
 import com.bridge.medic.support.repository.ApprovalLogRepository;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.LanguageRepository;
+import com.bridge.medic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +38,9 @@ public class SupportService {
     private final SpecialistDoctorTypeRepository specialistDoctorTypeRepository;
     private final SpecialistDataRepository specialistDataRepository;
     private final LanguageRepository languageRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final AdminService adminService;
 
     private final FileLocalStorageService fileLocalStorageService;
 
@@ -41,12 +48,16 @@ public class SupportService {
         return approvalLogRepository.findAllByStatus(ApprovalStatus.PENDING);
     }
 
-    public void approveRequest(Long id, String reviewComment) {
-        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(id)).orElseThrow();
+    public void approveRequest(Long approveRequestId, String reviewComment) {
+        ApprovalLog approvalLog = approvalLogRepository.findById(toIntExact(approveRequestId)).orElseThrow();
         approvalLog.setReviewedBy(authenticatedUserService.getCurrentUser());
         approvalLog.getSpecialistDoctorType().setApproved(true);
         approvalLog.getSpecialistDoctorType().setApprovedBy(authenticatedUserService.getCurrentUser());
-        updateReviewByStatus(id, reviewComment, ApprovalStatus.APPROVED, approvalLog);
+        User user = userRepository.findById(toIntExact(approvalLog.getSpecialistDoctorType().getSpecialistData().getUser().getId())).orElseThrow();
+        user.addRoleIfAbsent(roleRepository.findByName(RoleEnum.SPECIALIST.name()).get());
+        user.getRoles().forEach(x-> System.out.println(x.getName()));
+        userRepository.save(user);
+        updateReviewByStatus(approveRequestId, reviewComment, ApprovalStatus.APPROVED, approvalLog);
     }
 
     public void rejectRequest(Long id, String reviewComment) {
