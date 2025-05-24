@@ -204,7 +204,6 @@ public class AppointmentService {
         String ln = System.lineSeparator();
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " скасовано." + ln
                 + "Коментар: " + appointment.getComment() + ln
-                + "Посилання: " + appointment.getMeetingLink() + ln
                 + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
     }
 }
