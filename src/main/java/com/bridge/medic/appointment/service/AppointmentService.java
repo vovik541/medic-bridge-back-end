@@ -5,7 +5,6 @@ import com.bridge.medic.appointment.dto.AppointmentDto;
 import com.bridge.medic.appointment.dto.request.CreateAppointmentRequest;
 import com.bridge.medic.appointment.exception.SpecialistNotFoundException;
 import com.bridge.medic.appointment.model.Appointment;
-import com.bridge.medic.appointment.model.Appointment.AppointmentBuilder;
 import com.bridge.medic.appointment.repository.AppointmentRepository;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.mail.EmailDetails;
@@ -14,7 +13,8 @@ import com.bridge.medic.specialist.model.SpecialistData;
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
 import com.bridge.medic.specialist.repository.SpecialistDoctorTypeRepository;
-import com.bridge.medic.storage.service.FileLocalStorageService;
+import com.bridge.medic.storage.service.LocalStorageService;
+import com.bridge.medic.storage.service.S3StorageService;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,9 @@ public class AppointmentService {
     private final SpecialistDoctorTypeRepository specialistDoctorTypeRepository;
     private final SpecialistDataRepository specialistDataRepository;
     private final AuthenticatedUserService authenticatedUserService;
-    private final FileLocalStorageService fileLocalStorageService;
+    private final LocalStorageService localStorageService;
     private final EmailService emailService;
+    private final S3StorageService s3StorageService;
 
     public List<AppointmentDto> getAppointmentDtosBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
@@ -59,13 +60,13 @@ public class AppointmentService {
         return appointments;
     }
 
-    private void closePassedTimeAppointment(List<Appointment> pendingAppointments){
+    private void closePassedTimeAppointment(List<Appointment> pendingAppointments) {
         Appointment appointment;
         Iterator<Appointment> iterator = pendingAppointments.iterator();
         OffsetDateTime currentTime = OffsetDateTime.now();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             appointment = iterator.next();
-            if (appointment.getStatus().equals(AppointmentStatus.PENDING) && currentTime.isAfter(appointment.getEndTime())){
+            if (appointment.getStatus().equals(AppointmentStatus.PENDING) && currentTime.isAfter(appointment.getEndTime())) {
                 appointment.setStatus(AppointmentStatus.CANCELED);
                 appointment.setSummary("Лікар не встиг відповісти на ваше бронювання");
                 appointmentRepository.save(appointment);
@@ -73,6 +74,7 @@ public class AppointmentService {
             }
         }
     }
+
     //підтверджені, мають відбутися
     public List<Appointment> getApprovedOngoingAppointmentsBySpecialistId(Long specialistId) {
         return appointmentRepository.findAppointmentsBySpecialistIdAndStatusAfterTime(specialistId,
@@ -105,6 +107,7 @@ public class AppointmentService {
                         .build())
                 .collect(Collectors.toList());
     }
+
     public List<Appointment> getAppointmentByUserId(Long userId) {
 
         return appointmentRepository.findAllByUser_Id(userId);
@@ -141,38 +144,46 @@ public class AppointmentService {
     }
 
     private Appointment saveAppointment(CreateAppointmentRequest request, SpecialistData specialistData, MultipartFile attachedDocument) {
-        AppointmentBuilder appointmentBuilder = Appointment.builder()
+        Appointment.AppointmentBuilder appointmentBuilder = Appointment.builder()
                 .status(AppointmentStatus.PENDING)
                 .description(request.getDescription())
                 .user(authenticatedUserService.getCurrentUser())
                 .specialistData(specialistData)
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime());
+
         if (attachedDocument != null && !attachedDocument.isEmpty()) {
-            String fileLink = fileLocalStorageService.storeFile(attachedDocument, "appointment/" + authenticatedUserService.getCurrentUser().getId() + "/");
+            Long userId = authenticatedUserService.getCurrentUser().getId();
+            String key = "appointment/" + userId + "/" + System.currentTimeMillis() + "_" + attachedDocument.getOriginalFilename();
+
+            s3StorageService.upload(key, attachedDocument);
+
+            String fileLink = key;
             appointmentBuilder.attachedDocumentUrl(fileLink);
         }
+
         return appointmentRepository.save(appointmentBuilder.build());
     }
 
-    public void approveAppointment(Long appointmentId, String comment, String meetingLink, User specialist){
+
+    public void approveAppointment(Long appointmentId, String comment, String meetingLink, User specialist) {
         Appointment appointment = appointmentRepository.getById(appointmentId);
-        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)){
+        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)) {
             return;
         }
-        
+
         appointment.setMeetingLink(meetingLink);
         appointment.setComment(comment);
         appointment.setStatus(AppointmentStatus.CONFIRMED);
         appointmentRepository.save(appointment);
         emailService.sendSimpleMail(EmailDetails.builder()
-                        .subject("BridgeMedic консультацію підтверджено")
-                        .recipient(appointment.getUser().getEmail())
-                        .msgBody(buildApproveAppointmentMessage(specialist, appointment))
+                .subject("BridgeMedic консультацію підтверджено")
+                .recipient(appointment.getUser().getEmail())
+                .msgBody(buildApproveAppointmentMessage(specialist, appointment))
                 .build());
     }
 
-    public void cancelAppointment(Long appointmentId, String comment, User specialist){
+    public void cancelAppointment(Long appointmentId, String comment, User specialist) {
         Appointment appointment = appointmentRepository.getById(appointmentId);
 //        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)){
 //            return;
@@ -188,11 +199,11 @@ public class AppointmentService {
                 .build());
     }
 
-    public Long getSpecialistIdByAppointmentId(Long appointmentId){
+    public Long getSpecialistIdByAppointmentId(Long appointmentId) {
         return appointmentRepository.findById(appointmentId).get().getSpecialistData().getUser().getId();
     }
 
-    private String buildApproveAppointmentMessage(User specialist, Appointment appointment){
+    private String buildApproveAppointmentMessage(User specialist, Appointment appointment) {
         String ln = System.lineSeparator();
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " підтверджено." + ln
                 + "Коментар: " + appointment.getComment() + ln
@@ -200,7 +211,7 @@ public class AppointmentService {
                 + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
     }
 
-    private String buildCancelAppointmentMessage(User specialist, Appointment appointment){
+    private String buildCancelAppointmentMessage(User specialist, Appointment appointment) {
         String ln = System.lineSeparator();
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " скасовано." + ln
                 + "Коментар: " + appointment.getComment() + ln

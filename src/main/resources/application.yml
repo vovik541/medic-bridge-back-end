@@ -2,6 +2,16 @@ spring:
 #  config:
 #    activate:
 #      on-profile: local //todo later on prod/test/local smart swap
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        access-key: ${MB_AWS_ACCESS_KEY}
+        secret-key: ${MB_AWS_SECRET_KEY}
+      s3:
+        endpoint: ${MB_AWS_ENDPOINT}
+        path-style-access-enabled: true
   datasource:
     url: ${MB_DB_URL}
     username: ${MB_DB_USERNAME}
@@ -55,13 +65,3 @@ springdoc:
 file:
   upload-dir: files
 
-cloud:
-  aws:
-    region:
-      static: us-east-1
-    credentials:
-      access-key: ${MB_AWS_ACCESS_KEY}
-      secret-key: ${MB_AWS_SECRET_KEY}
-    s3:
-      endpoint: ${MB_AWS_ENDPOINT}
-      path-style-access-enabled: true

@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.nio.file.*;
 
 @Service
-public class FileLocalStorageService implements StorageServiceI {
+public class LocalStorageService implements StorageServiceI {
 
     private final Path uploadDir;
 
-    public FileLocalStorageService(@Value("${file.upload-dir:uploads}") String uploadDirName) {
+    public LocalStorageService(@Value("${file.upload-dir:uploads}") String uploadDirName) {
         this.uploadDir = Paths.get(uploadDirName).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.uploadDir);

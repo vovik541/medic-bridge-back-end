@@ -10,6 +10,7 @@ public class DotenvPostProcessor implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         String profile = environment.getProperty("spring.profiles.active");
+
         if (profile == null || !profile.contains("local")) {
             return;
         }
@@ -19,8 +20,10 @@ public class DotenvPostProcessor implements EnvironmentPostProcessor {
                 .ignoreIfMissing()
                 .load();
 
-        dotenv.entries().forEach(entry ->
-                environment.getSystemProperties().putIfAbsent(entry.getKey(), entry.getValue())
-        );
+        dotenv.entries().forEach(entry -> {
+            System.setProperty(entry.getKey(), entry.getValue()); // 👈 важливо
+        });
+
+        System.out.println("LOCAL [Dotenv] .env loaded into System properties");
     }
 }

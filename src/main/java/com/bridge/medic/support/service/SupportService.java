@@ -10,7 +10,7 @@ import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.specialist.repository.DoctorTypeRepository;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
 import com.bridge.medic.specialist.repository.SpecialistDoctorTypeRepository;
-import com.bridge.medic.storage.service.FileLocalStorageService;
+import com.bridge.medic.storage.service.LocalStorageService;
 import com.bridge.medic.support.ApprovalStatus;
 import com.bridge.medic.support.dto.DoctorReviewRequest;
 import com.bridge.medic.support.model.ApprovalLog;
@@ -42,7 +42,7 @@ public class SupportService {
     private final RoleRepository roleRepository;
     private final AdminService adminService;
 
-    private final FileLocalStorageService fileLocalStorageService;
+    private final LocalStorageService localStorageService;
 
     public List<ApprovalLog> getAllToReviewRequests() {
         return approvalLogRepository.findAllByStatus(ApprovalStatus.PENDING);
@@ -98,7 +98,7 @@ public class SupportService {
         approvalLog.setCreatedAt(LocalDateTime.now());
         approvalLog.setStatus(ApprovalStatus.PENDING);
 
-        String filePath = fileLocalStorageService.storeFile(file, "to_review/");
+        String filePath = localStorageService.storeFile(file, "to_review/");
         approvalLog.setDocumentUrl(filePath);
         approvalLog.setAboutDoctorComment(request.getAboutMeDescription());
         approvalLog.setSpecialistDoctorType(specialistDoctorType);

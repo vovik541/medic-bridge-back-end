@@ -1,6 +1,6 @@
 package com.bridge.medic.storage.controller;
 
-import com.bridge.medic.storage.service.FileLocalStorageService;
+import com.bridge.medic.storage.service.LocalStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -23,11 +23,11 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
-public class FileController {
+public class LocalFileController {
 
-    private final FileLocalStorageService fileStorageService;
+    private final LocalStorageService fileStorageService;
 
-    @GetMapping("/**")
+    @GetMapping("/local/**")
     public ResponseEntity<Resource> downloadFile(HttpServletRequest request) {
         try {
             String basePath = "/api/v1/files/";

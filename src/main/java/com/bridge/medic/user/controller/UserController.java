@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -116,7 +115,7 @@ public class UserController {
 
         return ResponseEntity.ok(new GetUserSettingsPageResponse(locationDTO, userMapper.userToUserDto(currentUser)));
     }
-    //done
+
     @PutMapping("/update-profile")
     public ResponseEntity<UserDto> updateProfile(@Valid @RequestBody UpdateUserInfoRequest request) {
         userService.updateUserInfo(request);
