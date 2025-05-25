@@ -11,6 +11,7 @@ import com.bridge.medic.specialist.repository.DoctorTypeRepository;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
 import com.bridge.medic.specialist.repository.SpecialistDoctorTypeRepository;
 import com.bridge.medic.storage.service.LocalStorageService;
+import com.bridge.medic.storage.service.S3StorageService;
 import com.bridge.medic.support.ApprovalStatus;
 import com.bridge.medic.support.dto.DoctorReviewRequest;
 import com.bridge.medic.support.model.ApprovalLog;
@@ -41,6 +42,7 @@ public class SupportService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AdminService adminService;
+    private final S3StorageService s3StorageService;
 
     private final LocalStorageService localStorageService;
 
@@ -74,7 +76,7 @@ public class SupportService {
     }
 
     @Transactional
-    public void createBecomeDoctorRequest(DoctorReviewRequest request, MultipartFile file) {
+    public void createBecomeDoctorRequest(DoctorReviewRequest request, MultipartFile attachedDocument) {
         User user = authenticatedUserService.getCurrentUser();
         user.addLanguageIfAbsent(languageRepository.findByName(request.getAdditionalLanguage()).orElseThrow());
 
@@ -98,8 +100,15 @@ public class SupportService {
         approvalLog.setCreatedAt(LocalDateTime.now());
         approvalLog.setStatus(ApprovalStatus.PENDING);
 
-        String filePath = localStorageService.storeFile(file, "to_review/");
-        approvalLog.setDocumentUrl(filePath);
+        if (attachedDocument != null && !attachedDocument.isEmpty()) {
+            String key;
+            Long userId = authenticatedUserService.getCurrentUser().getId();
+            key = "review_request/" + userId + "/" + System.currentTimeMillis() + "_" + attachedDocument.getOriginalFilename();
+
+            s3StorageService.upload(key, attachedDocument);
+            approvalLog.setDocumentUrl(key);
+        }
+
         approvalLog.setAboutDoctorComment(request.getAboutMeDescription());
         approvalLog.setSpecialistDoctorType(specialistDoctorType);
 
