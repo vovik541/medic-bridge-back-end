@@ -7,7 +7,8 @@ services:
     environment:
       - SERVICES=s3
       - DEBUG=1
-      - DATA_DIR=/data
+      - PERSISTENCE=1
       - DEFAULT_REGION=us-east-1
     volumes:
-      - "./.localstack:/data"
+      - "./.localstack:/var/lib/localstack"
+      - "./localstack-init:/etc/localstack/init/ready.d"
