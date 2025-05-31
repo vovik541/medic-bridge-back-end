@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToUserDto(authenticatedUserService.getCurrentUser()));
     }
 
-    @PatchMapping
+    @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser
@@ -121,6 +121,8 @@ public class UserController {
         userService.updateUserInfo(request);
         return ResponseEntity.ok().build();
     }
+
+
     //todo
 //    @PostMapping("/upload-photo")
 //    public ResponseEntity<Void> uploadPhoto(@RequestParam("image") MultipartFile image) {
