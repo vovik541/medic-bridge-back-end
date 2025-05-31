@@ -31,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@SuppressWarnings("all")
 @Configuration
 @RequiredArgsConstructor
 public class DatabaseTestDataSetUpConfig {
@@ -149,7 +150,7 @@ public class DatabaseTestDataSetUpConfig {
                 .email("conanzhill@gmail.com")
                 .login("vovik541")
                 .isLocked(false)
-                .password(passwordEncoder.encode("password"))
+                .password(passwordEncoder.encode("password"))//NOSONAR
                 .languages(languageRepository.findAll())
                 .registrationDate(LocalDateTime.now())
                 .roles(roleRepository.findAll())
@@ -207,7 +208,7 @@ public class DatabaseTestDataSetUpConfig {
                 .email(tag + num + "@gmail.com")
                 .login("login" + tag + num)
                 .isLocked(false)
-                .password(passwordEncoder.encode("password"))
+                .password(passwordEncoder.encode("password"))//NOSONAR
                 .languages(List.of(languageRepository.findByName("Українська").get(),
                         languageRepository.findByName("Англійська").get()))
                 .registrationDate(LocalDateTime.now())

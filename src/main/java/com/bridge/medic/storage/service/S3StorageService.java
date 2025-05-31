@@ -18,7 +18,6 @@ public class S3StorageService {
         try {
             s3Template.upload(bucket, key, file.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Upload error", e);
         }
     }

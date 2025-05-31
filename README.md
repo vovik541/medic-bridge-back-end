@@ -21,3 +21,10 @@ localstack S3 docker setup:
 
 check files
 aws --endpoint-url=http://localhost:4566 s3 ls s3://bridge-medic-bucket/
+
+
+Sonar
+1. docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+2. setup .m2/settings.xml for sonar login / url
+3. compile locally: mvn clean verify sonar:sonar
+   

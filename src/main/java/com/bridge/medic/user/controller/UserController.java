@@ -77,7 +77,7 @@ public class UserController {
             ResponseEntity.badRequest().build();
         }
 
-        User specialist = optionalSpecialist.get();
+        User specialist = optionalSpecialist.orElseThrow();
         if (!specialistService.isSpecialist(specialist.getId())){
             ResponseEntity.badRequest().build();
         }

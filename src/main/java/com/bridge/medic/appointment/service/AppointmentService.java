@@ -200,7 +200,7 @@ public class AppointmentService {
     }
 
     public Long getSpecialistIdByAppointmentId(Long appointmentId) {
-        return appointmentRepository.findById(appointmentId).get().getSpecialistData().getUser().getId();
+        return appointmentRepository.findById(appointmentId).orElseThrow().getSpecialistData().getUser().getId();
     }
 
     private String buildApproveAppointmentMessage(User specialist, Appointment appointment) {
