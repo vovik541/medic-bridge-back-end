@@ -81,4 +81,11 @@ public class DoctorController {
                         .getCanceledAppointmentsBySpecialistId(authenticatedUserService.getCurrentUser().getId())));
     }
 
+    @GetMapping("appointments/rescheduled")
+    public ResponseEntity<List<ConsultationForDoctorDto>> getRescheduledAppointments() {
+        return ResponseEntity.ok(appointmentMapper
+                .toConsultationForDoctorDtoList(appointmentService
+                        .getRescheduledAppointmentsBySpecialistId(authenticatedUserService.getCurrentUser().getId())));
+    }
+
 }

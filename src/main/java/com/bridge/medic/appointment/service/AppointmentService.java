@@ -129,6 +129,11 @@ public class AppointmentService {
         return appointmentRepository.findAppointmentsBySpecialistIdAndStatus(specialistId, AppointmentStatus.CANCELED);
     }
 
+    //просто всі відмінені
+    public List<Appointment> getRescheduledAppointmentsBySpecialistId(Long specialistId) {
+        return appointmentRepository.findAppointmentsBySpecialistIdAndStatus(specialistId, AppointmentStatus.RESCHEDULED);
+    }
+
     public List<AppointmentDto> getAppointmentDtosByUser(Long userId) {
         return appointmentRepository.findAllByUser_Id(userId).stream()
                 .map(a -> AppointmentDto.builder()
