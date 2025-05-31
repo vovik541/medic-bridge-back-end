@@ -144,8 +144,11 @@ public class AppointmentService {
     }
 
     public List<Appointment> getAppointmentByUserId(Long userId) {
-
         return appointmentRepository.findAllByUser_Id(userId);
+    }
+
+    public List<Appointment> getAppointmentToBeApprovedByUser(Long userId) {
+        return appointmentRepository.findAllByUser_IdAndStatus(userId, AppointmentStatus.RESCHEDULED);
     }
 
     public void rescheduleAppointment(RescheduleAppointmentRequest request) {
@@ -160,9 +163,9 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
 
         emailService.sendSimpleMail(EmailDetails.builder()
-                        .msgBody(buildRescheduleAppointmentMessage(appointment))
-                        .recipient(appointment.getUser().getEmail())
-                        .subject("Лікар запропонував новий час для зустрічі")
+                .msgBody(buildRescheduleAppointmentMessage(appointment))
+                .recipient(appointment.getUser().getEmail())
+                .subject("Лікар запропонував новий час для зустрічі")
                 .build());
     }
 
@@ -256,6 +259,55 @@ public class AppointmentService {
         return appointmentRepository.findById(appointmentId).orElseThrow().getSpecialistData().getUser().getId();
     }
 
+    public void updateStatusByUserChoice(Long appointmentId, AppointmentStatus newStatus) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow();
+
+        if (!(newStatus.equals(AppointmentStatus.CONFIRMED)
+                || newStatus.equals(AppointmentStatus.CANCELED))
+                && !appointment.getStatus().equals(AppointmentStatus.RESCHEDULED)
+        ) {
+            return;
+        }
+
+        appointment.setStatus(newStatus);
+        appointmentRepository.save(appointment);
+
+        User user = authenticatedUserService.getCurrentUser();
+        String message;
+        String subject;
+
+        if (newStatus.equals(AppointmentStatus.CONFIRMED)) {
+            subject = "Пацієнт підтвердив запис на консультацію";
+            message = "Консультацію погоджено! " + user.getFirstName() + " " + user.getLastName() + System.lineSeparator()
+                    + "Чекаємо на зустріч о " + appointment.getStartTime().toString();
+        } else {
+            subject = "Пацієнт скасував консультацію";
+            message = "Консультацію скасовано! " + user.getFirstName() + " " + user.getLastName() + System.lineSeparator()
+                    + "Час консультації " + appointment.getStartTime().toString();
+        }
+
+        emailService.sendSimpleMail(EmailDetails.builder()
+                .subject(subject)
+                .recipient(appointment.getSpecialistData().getUser().getEmail())
+                .msgBody(message)
+                .build());
+
+        message = newStatus.equals(AppointmentStatus.CONFIRMED)
+                ? buildApproveAppointmentMessage(appointment.getSpecialistData().getUser(), appointment)
+                : buildCancelAppointmentMessage(appointment.getSpecialistData().getUser(), appointment);
+
+        subject = newStatus.equals(AppointmentStatus.CONFIRMED)
+                ? "Консультацію погоджено!"
+                : "Консультацію скасовано!";
+
+        emailService.sendSimpleMail(EmailDetails.builder()
+                .subject(subject)
+                .recipient(user.getEmail())
+                .msgBody(message)
+                .build());
+    }
+
     private String buildApproveAppointmentMessage(User specialist, Appointment appointment) {
         String ln = System.lineSeparator();
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " підтверджено." + ln
@@ -270,6 +322,7 @@ public class AppointmentService {
                 + "Коментар: " + appointment.getComment() + ln
                 + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
     }
+
     private String buildRescheduleAppointmentMessage(Appointment appointment) {
         String ln = System.lineSeparator();
         return "Консультацію з " + appointment.getSpecialistData().getUser().getFirstName() + " "

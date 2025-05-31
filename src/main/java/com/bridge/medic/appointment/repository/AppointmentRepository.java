@@ -17,6 +17,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAllBySpecialistId(@Param("specialistId") Long specialistId);
 
     List<Appointment> findAllByUser_Id(Long userId);
+    List<Appointment> findAllByUser_IdAndStatus(Long userId, AppointmentStatus appointmentStatus);
 
     @Query("""
                 SELECT a FROM Appointment a

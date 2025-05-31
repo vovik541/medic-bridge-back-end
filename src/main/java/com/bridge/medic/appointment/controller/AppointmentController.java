@@ -4,6 +4,7 @@ import com.bridge.medic.appointment.dto.AppointmentDto;
 import com.bridge.medic.appointment.dto.AvailableSlotDto;
 import com.bridge.medic.appointment.dto.ConsultationDto;
 import com.bridge.medic.appointment.dto.request.CreateAppointmentRequest;
+import com.bridge.medic.appointment.dto.request.UpdateStatusRequest;
 import com.bridge.medic.appointment.dto.response.GetUserConsultationsResponse;
 import com.bridge.medic.appointment.exception.SpecialistNotFoundException;
 import com.bridge.medic.appointment.model.Appointment;
@@ -81,6 +82,33 @@ public class AppointmentController {
         response.setConsultations(consultations.reversed());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/to-approve")
+    public ResponseEntity<GetUserConsultationsResponse> getToApproveAppointments() {
+        User currentUser = authenticatedUserService.getCurrentUser();
+        List<Appointment> appointmentsByUser = appointmentService.getAppointmentToBeApprovedByUser(currentUser.getId());
+
+        List<ConsultationDto> consultations = new LinkedList<>();
+        for (Appointment appointment : appointmentsByUser){
+            consultations.add(ConsultationDto.builder()
+                    .id(appointment.getId())
+                    .comment(appointment.getComment())
+                    .end(appointment.getEndTime())
+                    .start(appointment.getStartTime())
+                    .summary(appointment.getSummary())
+                    .doctor(userMapper.userToUserDto(appointment.getSpecialistData().getUser()))
+                    .description(appointment.getDescription())
+                    .status(appointment.getStatus().name())
+                    .attachedDocumentUrl(appointment.getAttachedDocumentUrl())
+                    .meetingLink(appointment.getMeetingLink())
+                    .build());
+        }
+
+        GetUserConsultationsResponse response = new GetUserConsultationsResponse();
+        response.setConsultations(consultations.reversed());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/reschedule")
     public ResponseEntity<Void> rescheduleAppointment(@RequestBody RescheduleAppointmentRequest request) {
         appointmentService.rescheduleAppointment(request);
@@ -107,6 +135,12 @@ public class AppointmentController {
             return ResponseEntity.unprocessableEntity().build();
         }
         appointmentService.cancelAppointment(appointmentId, comment, currentSpecialist);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/update-status-user-choice")
+    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateStatusRequest request) {
+        appointmentService.updateStatusByUserChoice(request.getAppointmentId(), request.getNewStatus());
         return ResponseEntity.ok().build();
     }
 }
