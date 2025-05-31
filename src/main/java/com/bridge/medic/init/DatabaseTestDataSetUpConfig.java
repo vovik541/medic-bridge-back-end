@@ -175,7 +175,7 @@ public class DatabaseTestDataSetUpConfig {
             List<DoctorType> selected = copy.subList(0, count);
 
             Collections.shuffle(cities);
-            specialist = createBasicUser("doctor", i, RoleEnum.SPECIALIST, cities.getFirst());
+            specialist = createSpecialistUser("doctor", i, cities.getFirst());
             specialistData = SpecialistData.builder()
                     .user(specialist)
                     .build();
@@ -213,6 +213,24 @@ public class DatabaseTestDataSetUpConfig {
                         languageRepository.findByName("Англійська").get()))
                 .registrationDate(LocalDateTime.now())
                 .roles(List.of(roleRepository.findByName(roleEnum.name()).get()))
+                .city(city)
+                .image_url("https://cdn.pixabay.com/photo/2024/01/29/20/40/cat-8540772_640.jpg")
+                .build();
+    }
+
+    private User createSpecialistUser(String tag, int num, City city) {
+        return User.builder()
+                .firstName("Fn" + tag + num)
+                .lastName("Ln" + tag + num)
+                .email(tag + num + "@gmail.com")
+                .login("login" + tag + num)
+                .isLocked(false)
+                .password(passwordEncoder.encode("password"))//NOSONAR
+                .languages(List.of(languageRepository.findByName("Українська").get(),
+                        languageRepository.findByName("Англійська").get()))
+                .registrationDate(LocalDateTime.now())
+                .roles(List.of(roleRepository.findByName(RoleEnum.USER.name()).get(),
+                        roleRepository.findByName(RoleEnum.SPECIALIST.name()).get()))
                 .city(city)
                 .image_url("https://cdn.pixabay.com/photo/2024/01/29/20/40/cat-8540772_640.jpg")
                 .build();
