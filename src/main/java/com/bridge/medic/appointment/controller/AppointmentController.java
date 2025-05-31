@@ -1,6 +1,7 @@
 package com.bridge.medic.appointment.controller;
 
 import com.bridge.medic.appointment.dto.AppointmentDto;
+import com.bridge.medic.appointment.dto.AvailableSlotDto;
 import com.bridge.medic.appointment.dto.ConsultationDto;
 import com.bridge.medic.appointment.dto.request.CreateAppointmentRequest;
 import com.bridge.medic.appointment.dto.response.GetUserConsultationsResponse;
@@ -8,13 +9,16 @@ import com.bridge.medic.appointment.exception.SpecialistNotFoundException;
 import com.bridge.medic.appointment.model.Appointment;
 import com.bridge.medic.appointment.service.AppointmentService;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
+import com.bridge.medic.specialist.dto.RescheduleAppointmentRequest;
 import com.bridge.medic.user.mapper.UserMapper;
 import com.bridge.medic.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +30,13 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final AuthenticatedUserService authenticatedUserService;
     private final UserMapper userMapper;
+
+    @GetMapping("/available/{consultationId}")
+    public ResponseEntity<List<AvailableSlotDto>> getAvailableSlots(
+            @PathVariable Long consultationId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime date) {
+        return ResponseEntity.ok(appointmentService.getAvailableSlots(consultationId, date));
+    }
 
     @GetMapping("/{specialistId}")
     public ResponseEntity<List<AppointmentDto>> getAppointments(@PathVariable Long specialistId) {
@@ -70,7 +81,11 @@ public class AppointmentController {
         response.setConsultations(consultations.reversed());
         return ResponseEntity.ok(response);
     }
-
+    @PostMapping("/reschedule")
+    public ResponseEntity<Void> rescheduleAppointment(@RequestBody RescheduleAppointmentRequest request) {
+        appointmentService.rescheduleAppointment(request);
+        return ResponseEntity.ok().build();
+    }
 //    @PreAuthorize("hasRole('SPECIALIST')")
     @PostMapping("/approve-appointment")
     public ResponseEntity<?> approveAppointment(@RequestParam("appointmentId") Long appointmentId,

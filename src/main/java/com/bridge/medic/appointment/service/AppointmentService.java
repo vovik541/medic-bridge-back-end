@@ -2,6 +2,7 @@ package com.bridge.medic.appointment.service;
 
 import com.bridge.medic.appointment.AppointmentStatus;
 import com.bridge.medic.appointment.dto.AppointmentDto;
+import com.bridge.medic.appointment.dto.AvailableSlotDto;
 import com.bridge.medic.appointment.dto.request.CreateAppointmentRequest;
 import com.bridge.medic.appointment.exception.SpecialistNotFoundException;
 import com.bridge.medic.appointment.model.Appointment;
@@ -9,6 +10,7 @@ import com.bridge.medic.appointment.repository.AppointmentRepository;
 import com.bridge.medic.config.security.service.AuthenticatedUserService;
 import com.bridge.medic.mail.EmailDetails;
 import com.bridge.medic.mail.EmailService;
+import com.bridge.medic.specialist.dto.RescheduleAppointmentRequest;
 import com.bridge.medic.specialist.model.SpecialistData;
 import com.bridge.medic.specialist.model.SpecialistDoctorType;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
@@ -22,9 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneOffset;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +40,35 @@ public class AppointmentService {
     private final LocalStorageService localStorageService;
     private final EmailService emailService;
     private final S3StorageService s3StorageService;
+
+    public List<AvailableSlotDto> getAvailableSlots(Long consultationId, OffsetDateTime date) {
+        ZoneOffset offset = date.getOffset();
+
+        //zone -3 h Kyiv 8:00 - 20:00
+        OffsetDateTime dayStart = date.toLocalDate().atTime(5, 0).atOffset(offset);
+        OffsetDateTime dayEnd = date.toLocalDate().atTime(17, 0).atOffset(offset);
+
+        Long specialistId = appointmentRepository.findById(consultationId).orElseThrow().getSpecialistData().getUser().getId();
+        List<Appointment> appointments = appointmentRepository
+                .findAppointmentsBySpecialistIdAndTimeRange(specialistId, dayStart, dayEnd);
+
+        Set<OffsetDateTime> busyStarts = appointments.stream()
+                .map(Appointment::getStartTime)
+                .collect(Collectors.toSet());
+
+        List<AvailableSlotDto> slots = new ArrayList<>();
+        OffsetDateTime current = dayStart;
+        OffsetDateTime now = OffsetDateTime.now();
+
+        while (!current.isAfter(dayEnd.minusMinutes(30))) {
+            if (!busyStarts.contains(current) && now.isBefore(current)) {
+                slots.add(new AvailableSlotDto(current, current.plusMinutes(30)));
+            }
+            current = current.plusMinutes(30);
+        }
+
+        return slots;
+    }
 
     public List<AppointmentDto> getAppointmentDtosBySpecialist(Long specialistId) {
         return appointmentRepository.findAllBySpecialistId(specialistId).stream()
@@ -111,6 +141,18 @@ public class AppointmentService {
     public List<Appointment> getAppointmentByUserId(Long userId) {
 
         return appointmentRepository.findAllByUser_Id(userId);
+    }
+
+    public void rescheduleAppointment(RescheduleAppointmentRequest request) {
+        Appointment appointment = appointmentRepository.findById(request.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        //TODO validate reschedule time
+        appointment.setStartTime(request.getNewStart());
+        appointment.setEndTime(request.getNewEnd());
+        appointment.setStatus(AppointmentStatus.RESCHEDULED); // або CONFIRMED, якщо одразу підтверджено
+
+        appointmentRepository.save(appointment);
     }
 
     public Appointment bookAppointment(CreateAppointmentRequest request, MultipartFile attachedDocument) throws SpecialistNotFoundException {

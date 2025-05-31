@@ -1,5 +1,6 @@
 package com.bridge.medic.specialist.service;
 
+import com.bridge.medic.appointment.repository.AppointmentRepository;
 import com.bridge.medic.specialist.repository.SpecialistDataRepository;
 import com.bridge.medic.user.model.User;
 import com.bridge.medic.user.repository.UserRepository;
@@ -17,18 +18,16 @@ public class SpecialistService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final SpecialistDataRepository specialistDataRepository;
+    private final AppointmentRepository appointmentRepository;
 
     public List<User> findSpecialists(String city, String language, String specialistType) {
-        if (Objects.isNull(city) || city.isEmpty()){
+        if (Objects.isNull(city) || city.isEmpty()) {
             return userRepository.searchSpecialistsByLanguageAndType(language, specialistType);
         }
 
         return userRepository.searchSpecialistsByCityLanguageAndType(city, language, specialistType);
     }
 
-//    public User findSpecialistBySpecialistDataId(long id) {
-//        return specialistDataRepository.findSpecialistByDataId(id);
-//    }
 
     public List<String> findAllApprovedPositionsBySpecialistId(Long specialistId) {
         return userRepository.findDoctorTypeNamesByUserId(specialistId);

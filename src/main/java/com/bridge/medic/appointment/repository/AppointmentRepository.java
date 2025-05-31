@@ -71,4 +71,16 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAppointmentsBySpecialistIdAndStatusBeforeTime(@Param("specialistId") Long specialistId,
                                                                            @Param("status") AppointmentStatus status,
                                                                            @Param("now") OffsetDateTime now);
+
+    @Query("""
+    SELECT a FROM Appointment a
+    WHERE a.specialistData.user.id = :specialistId
+      AND a.startTime >= :start
+      AND a.startTime < :end
+""")
+    List<Appointment> findAppointmentsBySpecialistIdAndTimeRange(
+            @Param("specialistId") Long specialistId,
+            @Param("start") OffsetDateTime start,
+            @Param("end") OffsetDateTime end
+    );
 }
