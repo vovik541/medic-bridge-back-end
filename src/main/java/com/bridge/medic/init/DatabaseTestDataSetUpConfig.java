@@ -147,7 +147,7 @@ public class DatabaseTestDataSetUpConfig {
         User admin = User.builder()
                 .firstName("Volodymyr")
                 .lastName("Khymych")
-                .email("conanzhill@gmail.com")
+                .email("admin@gmail.com")
                 .login("vovik541")
                 .isLocked(false)
                 .password(passwordEncoder.encode("password"))//NOSONAR

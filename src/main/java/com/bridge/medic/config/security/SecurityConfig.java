@@ -71,22 +71,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                                 req.requestMatchers(SWAGGER_WHITELIST).permitAll()
                                         .requestMatchers(AUTH_WHITELIST).permitAll()
-//                                .requestMatchers(TEST_WHITELIST).permitAll()
                                         .requestMatchers(WHITELIST).permitAll()
                                         .requestMatchers("/api/v1/appointments/**").hasAnyAuthority(USER.name(), SPECIALIST.name())
+                                        .requestMatchers("/api/v1/appointments/reschedule").hasAnyAuthority(SPECIALIST.name(),ADMIN.name(), SUPPORT.name())
                                         .requestMatchers("/api/v1/users/**").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/users/specialist-info-page").hasAnyAuthority(USER.name())
                                         .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(SPECIALIST.name())
                                         .requestMatchers("/api/v1/doctor/appointments/**").hasAnyAuthority(SPECIALIST.name())
-//                                        .requestMatchers("/api/v1/doctor/**").hasAnyAuthority(ADMIN.name(), SUPPORT.name())
                                         .requestMatchers("/api/v1/support/**").hasAnyAuthority(SUPPORT.name(), ADMIN.name())
                                         .requestMatchers("/api/v1/admin/**").hasAnyAuthority(ADMIN.name())
-
-//                                        .requestMatchers(GET, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_READ.name(), SUPPORT.name())
-//                                        .requestMatchers(POST, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPPORT.name())
-//                                        .requestMatchers(PUT, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPPORT.name())
-//                                        .requestMatchers(DELETE, "/api/v1/doctor/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPPORT.name())
-
                                         .anyRequest()
                                         .authenticated()
                 )

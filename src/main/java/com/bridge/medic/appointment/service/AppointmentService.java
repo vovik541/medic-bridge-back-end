@@ -150,7 +150,7 @@ public class AppointmentService {
         //TODO validate reschedule time
         appointment.setStartTime(request.getNewStart());
         appointment.setEndTime(request.getNewEnd());
-        appointment.setStatus(AppointmentStatus.RESCHEDULED); // або CONFIRMED, якщо одразу підтверджено
+        appointment.setStatus(AppointmentStatus.RESCHEDULED);
 
         appointmentRepository.save(appointment);
     }
