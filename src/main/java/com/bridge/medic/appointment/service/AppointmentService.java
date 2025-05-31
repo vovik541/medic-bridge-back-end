@@ -158,6 +158,12 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.RESCHEDULED);
 
         appointmentRepository.save(appointment);
+
+        emailService.sendSimpleMail(EmailDetails.builder()
+                        .msgBody(buildRescheduleAppointmentMessage(appointment))
+                        .recipient(appointment.getUser().getEmail())
+                        .subject("Лікар запропонував новий час для зустрічі")
+                .build());
     }
 
     public Appointment bookAppointment(CreateAppointmentRequest request, MultipartFile attachedDocument) throws SpecialistNotFoundException {
@@ -263,5 +269,13 @@ public class AppointmentService {
         return "Консультацію з " + specialist.getFirstName() + " " + specialist.getLastName() + " скасовано." + ln
                 + "Коментар: " + appointment.getComment() + ln
                 + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString();
+    }
+    private String buildRescheduleAppointmentMessage(Appointment appointment) {
+        String ln = System.lineSeparator();
+        return "Консультацію з " + appointment.getSpecialistData().getUser().getFirstName() + " "
+                + appointment.getSpecialistData().getUser().getLastName()
+                + " було перенесено на інший час у зв'язку із занятістю лікаря." + ln
+                + "Час: " + appointment.getStartTime().toString() + " - " + appointment.getEndTime().toString() + ln
+                + "підтвердіть будь ласка, чи підходить даний час та день. Якщо ж ні - забронюйте нову зустріч!";
     }
 }

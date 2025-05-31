@@ -34,8 +34,8 @@ public class AppointmentController {
     @GetMapping("/available/{consultationId}")
     public ResponseEntity<List<AvailableSlotDto>> getAvailableSlots(
             @PathVariable Long consultationId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime date) {
-        return ResponseEntity.ok(appointmentService.getAvailableSlots(consultationId, date));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime offsetDate) {
+        return ResponseEntity.ok(appointmentService.getAvailableSlots(consultationId, offsetDate));
     }
 
     @GetMapping("/{specialistId}")
