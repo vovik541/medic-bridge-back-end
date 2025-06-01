@@ -53,7 +53,9 @@ public class SecurityConfig {
     };
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v1/users/check-by-login",
+            "/api/v1/users/check-by-email"
     };
     private static final String[] TEST_WHITELIST = {
             "/api/v1/**"
