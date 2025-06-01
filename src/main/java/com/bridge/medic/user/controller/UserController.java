@@ -94,15 +94,16 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO
     @GetMapping("/check-by-login")
-    public ResponseEntity<?> doesUserAlreadyExistByLogin(String login) {
-        return userService.finUserByLogin(login).isPresent() ? ResponseEntity.ok().build() : ResponseEntity.unprocessableEntity().build();
+    public ResponseEntity<?> doesUserAlreadyExistByLogin(@RequestParam String login) {
+        boolean exists = userService.finUserByLogin(login).isPresent();
+        return ResponseEntity.ok(exists);
     }
-    //TODO
+
     @GetMapping("/check-by-email")
     public ResponseEntity<?> doesUserAlreadyExistByEmail(String email) {
-        return userService.finUserByEmail(email).isPresent() ? ResponseEntity.ok().build() : ResponseEntity.unprocessableEntity().build();
+        boolean exists = userService.finUserByEmail(email).isPresent();
+        return ResponseEntity.ok(exists);
     }
 
     @GetMapping("/settings-page")
