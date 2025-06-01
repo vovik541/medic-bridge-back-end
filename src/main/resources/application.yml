@@ -1,7 +1,4 @@
 spring:
-#  config:
-#    activate:
-#      on-profile: local //todo later on prod/test/local smart swap
   cloud:
     aws:
       region:

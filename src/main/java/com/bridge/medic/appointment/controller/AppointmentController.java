@@ -114,7 +114,7 @@ public class AppointmentController {
         appointmentService.rescheduleAppointment(request);
         return ResponseEntity.ok().build();
     }
-//    @PreAuthorize("hasRole('SPECIALIST')")
+
     @PostMapping("/approve-appointment")
     public ResponseEntity<?> approveAppointment(@RequestParam("appointmentId") Long appointmentId,
                                                 @RequestParam("message") String comment,
@@ -126,7 +126,7 @@ public class AppointmentController {
         appointmentService.approveAppointment(appointmentId, comment, appointmentLink, currentSpecialist);
         return ResponseEntity.ok().build();
     }
-//    @PreAuthorize("hasRole('SPECIALIST')")
+
     @PostMapping("/cancel-appointment")
     public ResponseEntity<?> cancelAppointment(@RequestParam("appointmentId") Long appointmentId,
                                                 @RequestParam("message") String comment) {

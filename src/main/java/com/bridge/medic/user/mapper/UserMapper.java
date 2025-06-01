@@ -17,8 +17,6 @@ public interface UserMapper {
     @Mapping(source = "image_url", target = "imageUrl")
     UserDto userToUserDto(User user);
 
-    // User toEntity(UserDto dto);
-
     @Named("mapRolesToStrings")
     static List<String> mapRolesToStrings(List<com.bridge.medic.config.security.authorization.model.Role> roles) {
         if (roles == null) return null;

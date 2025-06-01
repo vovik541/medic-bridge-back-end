@@ -241,9 +241,6 @@ public class AppointmentService {
 
     public void cancelAppointment(Long appointmentId, String comment, User specialist) {
         Appointment appointment = appointmentRepository.getById(appointmentId);
-//        if (appointment.getStatus().equals(AppointmentStatus.CONFIRMED)){
-//            return;
-//        }
 
         appointment.setStatus(AppointmentStatus.CANCELED);
         appointment.setComment(comment);

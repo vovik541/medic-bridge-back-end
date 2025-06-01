@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-//@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminController {
 

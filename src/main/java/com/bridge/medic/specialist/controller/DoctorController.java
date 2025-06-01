@@ -87,5 +87,4 @@ public class DoctorController {
                 .toConsultationForDoctorDtoList(appointmentService
                         .getRescheduledAppointmentsBySpecialistId(authenticatedUserService.getCurrentUser().getId())));
     }
-
 }

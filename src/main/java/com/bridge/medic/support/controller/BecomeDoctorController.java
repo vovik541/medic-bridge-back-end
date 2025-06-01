@@ -64,5 +64,4 @@ public class BecomeDoctorController {
 
         return ResponseEntity.ok().build();
     }
-
 }

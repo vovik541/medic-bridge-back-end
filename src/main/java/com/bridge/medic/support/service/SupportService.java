@@ -57,7 +57,7 @@ public class SupportService {
         approvalLog.getSpecialistDoctorType().setApprovedBy(authenticatedUserService.getCurrentUser());
         User user = userRepository.findById(toIntExact(approvalLog.getSpecialistDoctorType().getSpecialistData().getUser().getId())).orElseThrow();
         user.addRoleIfAbsent(roleRepository.findByName(RoleEnum.SPECIALIST.name()).orElseThrow());
-        user.getRoles().forEach(x-> System.out.println(x.getName()));
+        user.getRoles().forEach(x -> System.out.println(x.getName()));
         userRepository.save(user);
         updateReviewByStatus(approveRequestId, reviewComment, ApprovalStatus.APPROVED, approvalLog);
     }
@@ -116,6 +116,4 @@ public class SupportService {
         specialistDataRepository.save(specialistData);
         approvalLogRepository.save(approvalLog);
     }
-
-
 }

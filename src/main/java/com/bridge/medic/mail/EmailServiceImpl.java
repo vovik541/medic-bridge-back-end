@@ -24,7 +24,6 @@ public class EmailServiceImpl implements EmailService {
     public String sendSimpleMail(EmailDetails details) {
 
         try {
-
             SimpleMailMessage mailMessage
                     = new SimpleMailMessage();
 
@@ -36,7 +35,6 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(mailMessage);
             return "Mail Sent Successfully...";
         } catch (Exception e) {
-//            e.printStackTrace();
             return "Error while Sending Mail";
         }
     }
