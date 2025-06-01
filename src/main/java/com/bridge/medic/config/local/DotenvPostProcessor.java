@@ -21,7 +21,7 @@ public class DotenvPostProcessor implements EnvironmentPostProcessor {
                 .load();
 
         dotenv.entries().forEach(entry -> {
-            System.setProperty(entry.getKey(), entry.getValue()); // 👈 важливо
+            System.setProperty(entry.getKey(), entry.getValue());
         });
 
         System.out.println("LOCAL [Dotenv] .env loaded into System properties");

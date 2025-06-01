@@ -29,3 +29,16 @@ Sonar
 3. compile locally: mvn clean verify sonar:sonar
 4. start docker start sonarqube
    
+Docker 
+1. ./mvnw spring-boot:build-image -DskipTests
+docker run --name bridgemedic-backend -p 8888:8080 -e MB_DB_URL=jdbc:mysql://host.docker.internal:3306/medic_bridge_db -e MB_DB_USERNAME=root -e MB_DB_PASSWORD=root -e MB_SECRET_KEY=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970 -e FILE_UPLOAD_DIR=/tmp/files -e MB_AWS_ENDPOINT=http://host.docker.internal:4566 -e CMS_EMAIL_USER=cms.mail.reminder@gmail.com -e CMS_EMAIL_PASSWORD=plgnytaobtbojmxp medic-bridge-back-end:0.0.1-SNAPSHOT
+docker run --name bridgemedic-backend -p 8888:8080
+   -e MB_DB_URL=
+   -e MB_DB_USERNAME= 
+   -e MB_DB_PASSWORD= 
+   -e MB_SECRET_KEY=
+   -e FILE_UPLOAD_DIR=
+   -e MB_AWS_ENDPOINT=
+   -e CMS_EMAIL_USER=
+   -e CMS_EMAIL_PASSWORD=
+   medic-bridge-back-end:0.0.1-SNAPSHOT

@@ -63,5 +63,5 @@ springdoc:
     path: /v3/api-docs
 
 file:
-  upload-dir: files
+  upload-dir: ${FILE_UPLOAD_DIR}
 

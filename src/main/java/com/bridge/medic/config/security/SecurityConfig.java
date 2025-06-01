@@ -63,7 +63,7 @@ public class SecurityConfig {
     private static final String[] WHITELIST = {
             "/api/v1/users/specialist-search",
             "/api/v1/commons/**",
-            "/api/v1/files/**" //TODO deal with file security
+            "/api/v1/files/**" //local pre-done
     };
 
     @Bean
