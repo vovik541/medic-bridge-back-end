@@ -27,4 +27,5 @@ Sonar
 1. docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
 2. setup .m2/settings.xml for sonar login / url
 3. compile locally: mvn clean verify sonar:sonar
+4. start docker start sonarqube
    
