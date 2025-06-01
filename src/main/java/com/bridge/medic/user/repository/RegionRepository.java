@@ -1,6 +1,6 @@
-package com.bridge.medic.user.location.repository;
+package com.bridge.medic.user.repository;
 
-import com.bridge.medic.user.location.model.Region;
+import com.bridge.medic.user.model.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -5,7 +5,6 @@ import com.bridge.medic.chat.model.Chat;
 import com.bridge.medic.chat.model.Participant;
 import com.bridge.medic.config.security.authorization.model.Role;
 import com.bridge.medic.specialist.model.SpecialistData;
-import com.bridge.medic.user.location.model.City;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

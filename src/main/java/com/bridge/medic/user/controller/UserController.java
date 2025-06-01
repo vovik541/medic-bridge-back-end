@@ -123,12 +123,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
-    //todo
-//    @PostMapping("/upload-photo")
-//    public ResponseEntity<Void> uploadPhoto(@RequestParam("image") MultipartFile image) {
-//        var user = authenticatedUserService.getCurrentUser();
-//        userService.updateUserImage(user.getId(), image);
-//        return ResponseEntity.ok().build();
-//    }
 }
