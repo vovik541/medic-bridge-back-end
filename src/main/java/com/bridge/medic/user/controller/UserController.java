@@ -33,6 +33,12 @@ public class UserController {
     private final SpecialistService specialistService;
     private final AuthenticatedUserService authenticatedUserService;
 
+    @DeleteMapping("/user")
+    public ResponseEntity<?> deleteUser() {
+        userService.deleteUser();
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/user")
     public ResponseEntity<UserDto> getCurrentUserInfo() {
         return ResponseEntity.ok(userMapper.userToUserDto(authenticatedUserService.getCurrentUser()));

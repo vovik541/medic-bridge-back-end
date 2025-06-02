@@ -21,6 +21,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthenticatedUserService authenticatedUserService;
 
+    public void deleteUser(){
+        User currentUser = authenticatedUserService.getCurrentUser();
+        userRepository.delete(currentUser);
+    }
+
     public void updateUserInfo(UpdateUserInfoRequest request) {
         User currentUser = authenticatedUserService.getCurrentUser();
         if (!currentUser.getEmail().equals(request.getEmail())) {
